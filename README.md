@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AmazonProductAPI
 PHP library to perform product lookup and searches using the Amazon Product API.
 
@@ -118,3 +119,9 @@ Returning simplified data gives:
 	
 ## Thanks
 This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake).
+=======
+AmazonProductAPI
+================
+
+PHP library to retrieve products from the Amazon Product API
+>>>>>>> 8eac234496a5a0245c61d95931beec800f0cf132
