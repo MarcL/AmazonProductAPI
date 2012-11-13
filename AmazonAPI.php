@@ -2,11 +2,8 @@
 /**
  *  Amazon Product API Library
  *
- *  This a generic PHP class that can hook-in to Amazon's Product API
- * 
- *  Author: Marc Littlemore
- *  http://www.marclittlemore.com
- * 
+ *  @author Marc Littlemore
+ *  @link 	http://www.marclittlemore.com
  *
  */ 
 
@@ -84,10 +81,7 @@ class AmazonAPI
 
 	private function GetUrl( $url )
 	{
-		// The use of `file_get_contents` may not work on all servers because it relies on the ability to open remote
-		// URLs using the file manipulation functions. 
-		// PHP gives you the ability to disable this functionality in your php.ini file and many administrators do so for security reasons.
-		// If your administrator has not done so, you can comment out the following 5 lines of code and uncomment the 6th.  
+		// Naively using curl and not checking errors
 		$session = curl_init( $url );
 		curl_setopt( $session, CURLOPT_HEADER, false );
 		curl_setopt( $session, CURLOPT_RETURNTRANSFER, true );
