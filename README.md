@@ -114,6 +114,8 @@ Returning simplified data gives:
     	
 ## TODO
 * Need to make the simplified data less hardcoded!
+* Add all AWS regions
+* Comment code
 	
 	
 ## Thanks
