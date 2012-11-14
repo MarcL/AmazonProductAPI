@@ -64,26 +64,16 @@ class AmazonAPI
 	public function SetLocale( $locale )
 	{
 		// Check we have a locale in our table
-		$foundLocale = false;
-		foreach( $this->m_localeTable as $key => $value )
+		if ( !array_key_exists( $locale, $this->m_localeTable ) )
 		{
-			if ( $key == $locale )
-			{
-				// Found the locale
-				$foundLocale = true;
-				break;
-			}
-		}
-		
-		if ( $foundLocale == false )
-		{
-			// If not then just assume it's the UK
-			$locale = 'uk';
+			// If not then just assume it's US
+			$locale = 'us';
 		}
 		
 		// Set the URL for this locale
 		$this->m_locale = $locale;
 
+		// Check for SSL
 		if ( $this->m_useSSL )
 			$this->m_amazonUrl = 'https://' . $this->m_localeTable[$locale];
 		else
