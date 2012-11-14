@@ -24,9 +24,13 @@ Instantiate the class using your secret keys
 	
 	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
 	
-It currently supports three Amazon regions - United Kingdom, United States and Germany. The default is UK but to set the locale call:
+It supports all Amazon regions : Canada ('ca'), China ('cn'), Germany ('de'), Spain ('es'), France ('fr'), Italy ('it'), Japan ('jp'), United Kingdom ('uk') and United States ('us'). The default is UK but to set the locale call SetLocale __before__ calling the product methods. E.g.
 
 	$amazonAPI->SetLocale( 'us' );
+	
+By default it will use HTTP but if you need to use SSL then call the following before using the product methods and it will connect to the HTTPS endpoints:
+
+	$amazonAPI->UseSSL( true );
 	
 ### Item Search
 To search for an item use the ItemSearch method:
@@ -114,7 +118,6 @@ Returning simplified data gives:
     	
 ## TODO
 * Need to make the simplified data less hardcoded!
-* Add all AWS regions
 * Comment code
 	
 	
