@@ -12,12 +12,19 @@ class AmazonAPI
 	private $m_amazonUrl = '';
 	private $m_locale = 'uk';
 	private $m_retrieveItems = false;
+	private $m_useSSL = false;
 
-	// URL of each territory
+	// AWS endpoint for each locale
 	private $m_localeTable = array(
-		'uk'	=>	'http://ecs.amazonaws.co.uk/onca/xml',
-		'de'	=>	'http://ecs.amazonaws.de/onca/xml',
-		'us'	=>	'http://ecs.amazonaws.com/onca/xml',
+		'ca'	=>	'webservices.amazon.ca/onca/xml',
+		'cn'	=>	'webservices.amazon.cn/onca/xml',
+		'de'	=>	'webservices.amazon.de/onca/xml',
+		'es'	=>	'webservices.amazon.es/onca/xml',
+		'fr'	=>	'webservices.amazon.fr/onca/xml',
+		'it'	=>	'webservices.amazon.it/onca/xml',
+		'jp'	=>	'webservices.amazon.jp/onca/xml',
+		'uk'	=>	'webservices.amazon.co.uk/onca/xml',
+		'us'	=>	'webservices.amazon.com/onca/xml',
 	);
 
 	// -----------------------------------------
@@ -49,6 +56,11 @@ class AmazonAPI
 		$this->SetLocale( 'uk' );
 	}
 
+	public function UseSSL( $useSSL )
+	{
+		$this->m_useSSL = $useSSL;
+	}
+
 	public function SetLocale( $locale )
 	{
 		// Check we have a locale in our table
@@ -71,7 +83,11 @@ class AmazonAPI
 		
 		// Set the URL for this locale
 		$this->m_locale = $locale;
-		$this->m_amazonUrl = $this->m_localeTable[$locale];
+
+		if ( $this->m_useSSL )
+			$this->m_amazonUrl = 'https://' . $this->m_localeTable[$locale];
+		else
+			$this->m_amazonUrl = 'http://' . $this->m_localeTable[$locale];
 	}
 	
 	public function GetValidSearchNames()
