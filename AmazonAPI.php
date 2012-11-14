@@ -275,7 +275,7 @@ class AmazonAPI
 	  * @param string $version - (optional) the version of the service you are using
 	  */
 	// Code from here http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
-	private function GetSignedRequest( $secret_key, $request, $access_key = false, $version = '2009-03-01')
+	private function GetSignedRequest( $secret_key, $request, $access_key = false, $version = '2011-08-01')
 	{
 	    // Get a nice array of elements to work with
 	    $uri_elements = parse_url($request);
