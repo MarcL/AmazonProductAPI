@@ -11,7 +11,7 @@ class AmazonAPI
 {
 	private $m_amazonUrl = '';
 	private $m_locale = 'uk';
-	private $m_retrieveItems = false;
+	private $m_retrieveArray = false;
 	private $m_useSSL = false;
 
 	// AWS endpoint for each locale
@@ -27,40 +27,65 @@ class AmazonAPI
 		'us'	=>	'webservices.amazon.com/onca/xml',
 	);
 
-	// -----------------------------------------
-	// -----------------------------------------
 	// API key ID
 	private $m_keyId		= NULL;
 
 	// API Secret Key
 	private $m_secretKey	= NULL;
+
+	// AWS associate tag
 	private $m_associateTag = NULL;
-	// -----------------------------------------
-	// -----------------------------------------
 	
+	// Valid names that can be used for search
 	private $mValidSearchNames = array(
 		'All','Apparel','Appliances','Automotive','Baby','Beauty','Blended','Books','Classical','DVD','Electronics','Grocery','HealthPersonalCare','HomeGarden','HomeImprovement','Jewelry','KindleStore','Kitchen','Lighting','Marketplace','MP3Downloads','Music','MusicTracks','MusicalInstruments','OfficeProducts','OutdoorLiving','Outlet','PetSupplies','PCHardware','Shoes','Software','SoftwareVideoGames','SportingGoods','Tools','Toys','VHS','Video','VideoGames','Watches',
 	);
 
 	private $mErrors = array();
 
-	public function __construct( $keyId, $secretKey, $associateTag, $retrieveItems = false )
+	public function __construct( $keyId, $secretKey, $associateTag )
 	{
 		// Setup the AWS credentials
 		$this->m_keyId			= $keyId;
 		$this->m_secretKey		= $secretKey;
 		$this->m_associateTag	= $associateTag;
-		$this->m_retrieveItems	= $retrieveItems;
 
 		// Set UK as locale by default
 		$this->SetLocale( 'uk' );
 	}
 
-	public function UseSSL( $useSSL )
+	/**
+	 * Enable or disable SSL endpoints
+	 *
+	 * @param	useSSL 		True if using SSL, false otherwise
+	 * 
+	 * @return	None
+	 */
+	public function SetSSL( $useSSL = true )
 	{
 		$this->m_useSSL = $useSSL;
 	}
 
+	/**
+	 * Enable or disable retrieving items array rather than XML
+	 *
+	 * @param	retrieveArray	True if retrieving as array, false otherwise.
+	 * 
+	 * @return	None
+	 */
+	public function SetRetrieveAsArray( $retrieveArray = true )
+	{
+		$this->m_retrieveArray	= $retrieveArray;
+	}
+
+	/**
+	 * Sets the locale for the endpoints
+	 *
+	 * @param	locale		Set to a valid AWS locale - see link below.
+	 * @link 	http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/Locales.html
+	 * 
+	 * @return	None
+	 */
 	public function SetLocale( $locale )
 	{
 		// Check we have a locale in our table
@@ -80,26 +105,69 @@ class AmazonAPI
 			$this->m_amazonUrl = 'http://' . $this->m_localeTable[$locale];
 	}
 	
+	/**
+	 * Return valid search names
+	 *
+	 * @param	None
+	 * 
+	 * @return	Array 	Array of valid string names
+	 */
 	public function GetValidSearchNames()
 	{
 		return( $this->mValidSearchNames );
 	}
 
-	private function GetUrl( $url )
+	/**
+	 * Return data from AWS
+	 *
+	 * @param	url			URL request
+	 * 
+	 * @return	mixed		SimpleXML object or false if failure.
+	 */
+	private function MakeRequest( $url )
 	{
-		// Naively using curl and not checking errors
+		// Check if curl is installed
+		if ( !function_exists( 'curl_init' ) )
+		{
+			$this->AddError( "Curl not available" );
+			return( false );
+		}
+
+		// Use curl to retrieve data from Amazon
 		$session = curl_init( $url );
 		curl_setopt( $session, CURLOPT_HEADER, false );
 		curl_setopt( $session, CURLOPT_RETURNTRANSFER, true );
 		$response = curl_exec( $session );
-		curl_close( $session ); 
 
+		$error = NULL;
+		if ( $response === false )
+			$error = curl_error( $session );
+
+		curl_close( $session );
+
+		// Have we had an error?
+		if ( !empty( $error ) )
+		{
+			$this->AddError( "Error downloading data : $url : " . $error );
+			return( false );
+		}
+
+		// Interpret data as XML
 		$parsedXml = simplexml_load_string( $response );
 		
 		return( $parsedXml );
 	}
 	
-	//Set up the operation in the request
+	/**
+	 * Search for items
+	 *
+	 * @param	keywords			Keywords which we're requesting
+	 * @param	searchIndex			Name of search index (category) requested. NULL if searching all.
+	 * @param	sortBySalesRank		True if sorting by sales rank, false otherwise.
+	 * @param	condition			Condition of item. Valid conditions : Used, Collectible, Refurbished, All 
+	 * 
+	 * @return	mixed				SimpleXML object, array of data or false if failure.
+	 */
 	public function ItemSearch( $keywords, $searchIndex = NULL, $sortBySalesRank = true, $condition = 'New' )
 	{
 		// Set the values for some of the parameters.
@@ -133,9 +201,11 @@ class AmazonAPI
 		$signedUrl = $this->GetSignedRequest( $this->m_secretKey, $request );
 		
 		// Get the response from the signed URL
-		$parsedXml = $this->GetUrl( $signedUrl );
+		$parsedXml = $this->MakeRequest( $signedUrl );
+		if ( $parsedXml === false )
+			return( false );
 		
-		if ( $this->m_retrieveItems )
+		if ( $this->m_retrieveArray )
 		{
 			$items = $this->RetrieveItems( $parsedXml );
 		}
@@ -147,7 +217,14 @@ class AmazonAPI
 		return( $items );
 	}
 	
-	// Pass the ASIN id
+	/**
+	 * Lookup items from ASINs
+	 *
+	 * @param	asinList			Either a single ASIN or an array of ASINs
+	 * @param	onlyFromAmazon		True if only requesting items from Amazon and not 3rd party vendors
+	 * 
+	 * @return	mixed				SimpleXML object, array of data or false if failure.
+	 */
 	public function ItemLookup( $asinList, $onlyFromAmazon = false )
 	{
 		// Check if it's an array
@@ -176,9 +253,11 @@ class AmazonAPI
 		$signedUrl = $this->GetSignedRequest( $this->m_secretKey, $request );
 		
 		// Get the response from the signed URL
-		$parsedXml = $this->GetUrl( $signedUrl );
+		$parsedXml = $this->MakeRequest( $signedUrl );
+		if ( $parsedXml === false )
+			return( false );
 		
-		if ( $this->m_retrieveItems )
+		if ( $this->m_retrieveArray )
 		{
 			$items = $this->RetrieveItems( $parsedXml );
 		}
@@ -189,7 +268,14 @@ class AmazonAPI
 		return( $items );
 	}
 
-	public function RetrieveItems( $responseXml )
+	/**
+	 * Basic method to retrieve only requested item data as an array
+	 *
+	 * @param	responseXML		XML data to be passed
+	 * 
+	 * @return	Array			Array of item data. Empty array if not found
+	 */
+	private function RetrieveItems( $responseXml )
 	{
 		$items = array();
 		if ( empty( $responseXml ) )
@@ -242,7 +328,13 @@ class AmazonAPI
 		return( $items );		
 	}
 
-
+	/**
+	 * Determines the base address of the request
+	 *
+	 * @param	None
+	 * 
+	 * @return	string		Base URL of AWS request
+	 */
 	private function GetBaseUrl()
 	{
 		//Define the request
@@ -263,8 +355,9 @@ class AmazonAPI
 	  * @param string $request - your existing request URI
 	  * @param string $access_key - your Amazon AWS access key
 	  * @param string $version - (optional) the version of the service you are using
+	  *
+	  * @link http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
 	  */
-	// Code from here http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
 	private function GetSignedRequest( $secret_key, $request, $access_key = false, $version = '2011-08-01')
 	{
 	    // Get a nice array of elements to work with
@@ -309,28 +402,28 @@ class AmazonAPI
 	    return "http://{$uri_elements['host']}{$uri_elements['path']}?{$new_request}&Signature={$signature}";
 	}
 
+	/**
+	 * Adds error to an error array
+	 *
+	 * @param	error	Error string
+	 * 
+	 * @return	None
+	 */
 	private function AddError( $error )
 	{
 		array_push( $this->mErrors, $error );
 	}
 
+	/**
+	 * Returns array of errors
+	 *
+	 * @param	None
+	 * 
+	 * @return	Array		Array of errors. Empty array if none found
+	 */
 	public function GetErrors()
 	{
 		return( $this->mErrors );
-	}
-
-	// Get all errors as a single error string
-	public function GetErrorString()
-	{
-		$errors = $this->GetErrors();
-		$errorString = '<ul>';
-		foreach( $errors as $error )
-		{
-			$errorString .= "<li>$error</li>";
-		}
-		$errorString .= "</ul>";
-
-		return( $errorString );
 	}
 }
 ?>

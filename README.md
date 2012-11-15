@@ -57,7 +57,7 @@ To look up product using the product ASIN number use ItemLookup:
 	$items = $amazonAPI->ItemLookUp( $asinIds );	
 
 ## Returned data
-By default the data will be returned as SimpleXML nodes. However if you pass a 4th parameter as 'true' to the constructor then a simplified array of items will be returned. For example:
+By default the data will be returned as SimpleXML nodes. However if you call SetRetrieveAsArray() then a simplified array of items will be returned. For example:
 
 	// Return XML data
 	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
@@ -78,7 +78,8 @@ This will output:
         ...
 
 	// Return simplified data
-	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId, true );
+	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
+	$amazonAPI->SetRetrieveAsArray();
 	$items = $amazonAPI->ItemSearch( 'harry potter' );
 	var_dump( $items );
 	
@@ -118,8 +119,6 @@ Returning simplified data gives:
     	
 ## TODO
 * Need to make the simplified data less hardcoded!
-* Comment code
-	
 	
 ## Thanks
 This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake).
