@@ -7,37 +7,37 @@ It also assumes that you have some knowledge of Amazon's Product API and have se
 
 ## Installation
 Clone the git repository:
-	
+
 	git clone https://github.com/MarcL/AmazonProductAPI.git
-	
+
 
 ## Usage
 Include the library in your code
-	
+
 	require_once( 'AmazonAPI' )
-	
+
 Instantiate the class using your secret keys
 
 	$keyId 		= 'YOUR-AWS-KEY';
 	$secretKey 	= 'YOUR-AWS-SECRET-KEY';
 	$associateId	= 'YOUR-AMAZON-ASSOCIATE-ID';
-	
+
 	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
-	
+
 It supports all Amazon regions : Canada ('ca'), China ('cn'), Germany ('de'), Spain ('es'), France ('fr'), Italy ('it'), Japan ('jp'), United Kingdom ('uk') and United States ('us'). The default is UK but to set the locale call SetLocale __before__ calling the product methods. E.g.
 
 	$amazonAPI->SetLocale( 'us' );
-	
+
 By default it will use HTTP but if you need to use SSL then call the following before using the product methods and it will connect to the HTTPS endpoints:
 
-	$amazonAPI->UseSSL( true );
-	
+	$amazonAPI->SetSSL( true );
+
 ### Item Search
 To search for an item use the ItemSearch method:
 
 	// Search for Harry Potter items in all categories
 	$items = $amazonAPI->ItemSearch( 'harry potter' );
-	
+
 	// Search for Harry Potter items in Books category only
 	$items = $amazonAPI->ItemSearch( 'harry potter', 'Books' );
 
@@ -45,16 +45,16 @@ To determine valid categories for search call GetValidSearchNames() :
 
 	// Get an array of valid search categories we can use
 	$searchCategories = $amazonAPI->GetValidSearchNames();
-	
+
 ### Item Lookup
 To look up product using the product ASIN number use ItemLookup:
 
 	// Retrieve specific item by id
 	$items = $amazonAPI->ItemLookUp( 'B003U6I396' );
-	
+
 	// Retrieve a list of items by ids
 	$asinIds = array( 'B003U6I396', 'B003U6I397', 'B003U6I398' );
-	$items = $amazonAPI->ItemLookUp( $asinIds );	
+	$items = $amazonAPI->ItemLookUp( $asinIds );
 
 ## Returned data
 By default the data will be returned as SimpleXML nodes. However if you call SetRetrieveAsArray() then a simplified array of items will be returned. For example:
@@ -65,7 +65,7 @@ By default the data will be returned as SimpleXML nodes. However if you call Set
 	var_dump( $items );
 
 This will output:
-	
+
 	class SimpleXMLElement#2 (2) {
 		public $OperationRequest =>
 			class SimpleXMLElement#3 (3) {
@@ -82,7 +82,7 @@ This will output:
 	$amazonAPI->SetRetrieveAsArray();
 	$items = $amazonAPI->ItemSearch( 'harry potter' );
 	var_dump( $items );
-	
+
 Returning simplified data gives:
 
 	array(10) {
@@ -116,9 +116,9 @@ Returning simplified data gives:
     	'title' =>
     	string(40) "Harry Potter and the Philosopher\'s Stone"
     	…
-    	
+
 ## TODO
 * Need to make the simplified data less hardcoded!
-	
+
 ## Thanks
 This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake).
