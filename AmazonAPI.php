@@ -5,7 +5,7 @@
  *  @author Marc Littlemore
  *  @link 	http://www.marclittlemore.com
  *
- */ 
+ */
 
 class AmazonAPI
 {
@@ -35,7 +35,7 @@ class AmazonAPI
 
 	// AWS associate tag
 	private $m_associateTag = NULL;
-	
+
 	// Valid names that can be used for search
 	private $mValidSearchNames = array(
 		'All','Apparel','Appliances','Automotive','Baby','Beauty','Blended','Books','Classical','DVD','Electronics','Grocery','HealthPersonalCare','HomeGarden','HomeImprovement','Jewelry','KindleStore','Kitchen','Lighting','Marketplace','MP3Downloads','Music','MusicTracks','MusicalInstruments','OfficeProducts','OutdoorLiving','Outlet','PetSupplies','PCHardware','Shoes','Software','SoftwareVideoGames','SportingGoods','Tools','Toys','VHS','Video','VideoGames','Watches',
@@ -58,7 +58,7 @@ class AmazonAPI
 	 * Enable or disable SSL endpoints
 	 *
 	 * @param	useSSL 		True if using SSL, false otherwise
-	 * 
+	 *
 	 * @return	None
 	 */
 	public function SetSSL( $useSSL = true )
@@ -70,7 +70,7 @@ class AmazonAPI
 	 * Enable or disable retrieving items array rather than XML
 	 *
 	 * @param	retrieveArray	True if retrieving as array, false otherwise.
-	 * 
+	 *
 	 * @return	None
 	 */
 	public function SetRetrieveAsArray( $retrieveArray = true )
@@ -83,7 +83,7 @@ class AmazonAPI
 	 *
 	 * @param	locale		Set to a valid AWS locale - see link below.
 	 * @link 	http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/Locales.html
-	 * 
+	 *
 	 * @return	None
 	 */
 	public function SetLocale( $locale )
@@ -94,7 +94,7 @@ class AmazonAPI
 			// If not then just assume it's US
 			$locale = 'us';
 		}
-		
+
 		// Set the URL for this locale
 		$this->m_locale = $locale;
 
@@ -104,12 +104,12 @@ class AmazonAPI
 		else
 			$this->m_amazonUrl = 'http://' . $this->m_localeTable[$locale];
 	}
-	
+
 	/**
 	 * Return valid search names
 	 *
 	 * @param	None
-	 * 
+	 *
 	 * @return	Array 	Array of valid string names
 	 */
 	public function GetValidSearchNames()
@@ -121,7 +121,7 @@ class AmazonAPI
 	 * Return data from AWS
 	 *
 	 * @param	url			URL request
-	 * 
+	 *
 	 * @return	mixed		SimpleXML object or false if failure.
 	 */
 	private function MakeRequest( $url )
@@ -154,18 +154,18 @@ class AmazonAPI
 
 		// Interpret data as XML
 		$parsedXml = simplexml_load_string( $response );
-		
+
 		return( $parsedXml );
 	}
-	
+
 	/**
 	 * Search for items
 	 *
 	 * @param	keywords			Keywords which we're requesting
 	 * @param	searchIndex			Name of search index (category) requested. NULL if searching all.
 	 * @param	sortBySalesRank		True if sorting by sales rank, false otherwise.
-	 * @param	condition			Condition of item. Valid conditions : Used, Collectible, Refurbished, All 
-	 * 
+	 * @param	condition			Condition of item. Valid conditions : Used, Collectible, Refurbished, All
+	 *
 	 * @return	mixed				SimpleXML object, array of data or false if failure.
 	 */
 	public function ItemSearch( $keywords, $searchIndex = NULL, $sortBySalesRank = true, $condition = 'New' )
@@ -173,7 +173,7 @@ class AmazonAPI
 		// Set the values for some of the parameters.
 		$operation = "ItemSearch";
 		$responseGroup = "ItemAttributes,Offers,Images";
-		
+
 		//Define the request
 		$request= $this->GetBaseUrl()
 		   . "&Operation=" . $operation
@@ -199,12 +199,12 @@ class AmazonAPI
 
 		// Need to sign the request now
 		$signedUrl = $this->GetSignedRequest( $this->m_secretKey, $request );
-		
+
 		// Get the response from the signed URL
 		$parsedXml = $this->MakeRequest( $signedUrl );
 		if ( $parsedXml === false )
 			return( false );
-		
+
 		if ( $this->m_retrieveArray )
 		{
 			$items = $this->RetrieveItems( $parsedXml );
@@ -216,13 +216,13 @@ class AmazonAPI
 
 		return( $items );
 	}
-	
+
 	/**
 	 * Lookup items from ASINs
 	 *
 	 * @param	asinList			Either a single ASIN or an array of ASINs
 	 * @param	onlyFromAmazon		True if only requesting items from Amazon and not 3rd party vendors
-	 * 
+	 *
 	 * @return	mixed				SimpleXML object, array of data or false if failure.
 	 */
 	public function ItemLookup( $asinList, $onlyFromAmazon = false )
@@ -232,14 +232,14 @@ class AmazonAPI
 		{
 			$asinList = implode( ',', $asinList );
 		}
-		
+
 		// Set the values for some of the parameters.
 		$operation = "ItemLookup";
 		$responseGroup = "ItemAttributes,Offers,Reviews,Images,EditorialReview";
-		
+
 		// Determine whether we just want Amazon results only or not
 		$merchantId = ( $onlyFromAmazon == true ) ? 'Amazon' : 'All';
-		
+
 		$reviewSort = '-OverallRating';
 		//Define the request
 		$request = $this->GetBaseUrl()
@@ -248,15 +248,15 @@ class AmazonAPI
 		   . "&ResponseGroup=" . $responseGroup
 		   . "&ReviewSort=" . $reviewSort
 		   . "&MerchantId=" . $merchantId;
-		   
+
 		// Need to sign the request now
 		$signedUrl = $this->GetSignedRequest( $this->m_secretKey, $request );
-		
+
 		// Get the response from the signed URL
 		$parsedXml = $this->MakeRequest( $signedUrl );
 		if ( $parsedXml === false )
 			return( false );
-		
+
 		if ( $this->m_retrieveArray )
 		{
 			$items = $this->RetrieveItems( $parsedXml );
@@ -272,7 +272,7 @@ class AmazonAPI
 	 * Basic method to retrieve only requested item data as an array
 	 *
 	 * @param	responseXML		XML data to be passed
-	 * 
+	 *
 	 * @return	Array			Array of item data. Empty array if not found
 	 */
 	private function RetrieveItems( $responseXml )
@@ -307,7 +307,7 @@ class AmazonAPI
 			$item['url'] = (string) $responseItem->DetailPageURL;
 			$item['rrp'] = ( (float) $responseItem->ItemAttributes->ListPrice->Amount ) / 100.0;
 			$item['title'] = (string) $responseItem->ItemAttributes->Title;
-			
+
 			if ( $responseItem->OfferSummary )
 			{
 				$item['lowestPrice'] = ( (float) $responseItem->OfferSummary->LowestNewPrice->Amount ) / 100.0;
@@ -325,14 +325,14 @@ class AmazonAPI
 			array_push( $items, $item );
 		}
 
-		return( $items );		
+		return( $items );
 	}
 
 	/**
 	 * Determines the base address of the request
 	 *
 	 * @param	None
-	 * 
+	 *
 	 * @return	string		Base URL of AWS request
 	 */
 	private function GetBaseUrl()
@@ -343,12 +343,12 @@ class AmazonAPI
 		   . "?Service=AWSECommerceService"
 		   . "&AssociateTag=" . $this->m_associateTag
 		   . "&AWSAccessKeyId=" . $this->m_keyId;
-		   
+
 		return( $request );
 	}
-	
+
 	/**
-	  * This function will take an existing Amazon request and change it so that it will be usable 
+	  * This function will take an existing Amazon request and change it so that it will be usable
 	  * with the new authentication.
 	  *
 	  * @param string $secret_key - your Amazon AWS secret key
@@ -362,24 +362,24 @@ class AmazonAPI
 	{
 	    // Get a nice array of elements to work with
 	    $uri_elements = parse_url($request);
-	 
+
 	    // Grab our request elements
 	    $request = $uri_elements['query'];
-	 
+
 	    // Throw them into an array
 	    parse_str($request, $parameters);
-	 
+
 	    // Add the new required paramters
 	    $parameters['Timestamp'] = gmdate( "Y-m-d\TH:i:s\Z" );
 	    $parameters['Version'] = $version;
 	    if ( strlen($access_key) > 0 )
 	    {
 	        $parameters['AWSAccessKeyId'] = $access_key;
-	    }   
-	 
+	    }
+
 	    // The new authentication requirements need the keys to be sorted
 	    ksort( $parameters );
-	 
+
 	    // Create our new request
 	    foreach ( $parameters as $parameter => $value )
 	    {
@@ -387,17 +387,17 @@ class AmazonAPI
 	        $parameter = str_replace( "%7E", "~", rawurlencode( $parameter ) );
 	        $value = str_replace( "%7E", "~", rawurlencode( $value ) );
 	        $request_array[] = $parameter . '=' . $value;
-	    }   
-	 
+	    }
+
 	    // Put our & symbol at the beginning of each of our request variables and put it in a string
 	    $new_request = implode( '&', $request_array );
-	 
+
 	    // Create our signature string
 	    $signature_string = "GET\n{$uri_elements['host']}\n{$uri_elements['path']}\n{$new_request}";
-	 
+
 	    // Create our signature using hash_hmac
 	    $signature = urlencode( base64_encode( hash_hmac( 'sha256', $signature_string, $secret_key, true ) ) );
-	 
+
 	    // Return our new request
 	    return "http://{$uri_elements['host']}{$uri_elements['path']}?{$new_request}&Signature={$signature}";
 	}
@@ -406,7 +406,7 @@ class AmazonAPI
 	 * Adds error to an error array
 	 *
 	 * @param	error	Error string
-	 * 
+	 *
 	 * @return	None
 	 */
 	private function AddError( $error )
@@ -418,7 +418,7 @@ class AmazonAPI
 	 * Returns array of errors
 	 *
 	 * @param	None
-	 * 
+	 *
 	 * @return	Array		Array of errors. Empty array if none found
 	 */
 	public function GetErrors()
