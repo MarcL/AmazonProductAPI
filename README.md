@@ -24,7 +24,18 @@ Instantiate the class using your secret keys
 
 	$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
 
-It supports all Amazon regions : Canada ('ca'), China ('cn'), Germany ('de'), Spain ('es'), France ('fr'), Italy ('it'), Japan ('jp'), United Kingdom ('uk') and United States ('us'). The default is UK but to set the locale call SetLocale __before__ calling the product methods. E.g.
+It supports all Amazon regions:
+* Canada ('ca')
+* China ('cn')
+* Germany ('de')
+* Spain ('es')
+* France ('fr')
+* Italy ('it')
+* Japan ('jp')
+* United Kingdom ('uk')
+* United States ('us').
+
+The default is UK but to set the locale call SetLocale __before__ calling the product methods. E.g.
 
 	$amazonAPI->SetLocale( 'us' );
 
