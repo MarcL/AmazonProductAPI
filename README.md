@@ -12,6 +12,24 @@ Clone the git repository:
 git clone https://github.com/MarcL/AmazonProductAPI.git
 ```
 
+## Examples
+
+I've added some simple examples in `examples.php`. To run them create a file called `secretKeys.php` containing your secret keys:
+
+```php
+<?php
+$keyId = 'YOUR-AWS-KEY';
+$secretKey = 'YOUR-AWS-SECRET-KEY';
+$associateId = 'YOUR-AMAZON-ASSOCIATE-ID';
+?>
+```
+
+and then run the examples with:
+
+```shell
+php examples.php
+```
+
 ## Usage
 Include the library in your code:
 
