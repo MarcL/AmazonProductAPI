@@ -54,7 +54,7 @@ $amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
 
 This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set them using `SetLocale`:
 
-It defaults to US but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
+It defaults to UK but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
 
 ```php
 $amazonAPI->SetLocale('uk');
