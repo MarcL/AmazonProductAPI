@@ -12,7 +12,7 @@ class AmazonAPI
 	private $m_amazonUrl = '';
 	private $m_locale = 'uk';
 	private $m_retrieveArray = false;
-	private $m_useSSL = false;
+	private $m_useSSL = true;
 
 	// AWS endpoint for each locale
 	private $m_localeTable = array(
@@ -38,7 +38,45 @@ class AmazonAPI
 
 	// Valid names that can be used for search
 	private $mValidSearchNames = array(
-		'All','Apparel','Appliances','Automotive','Baby','Beauty','Blended','Books','Classical','DVD','Electronics','Grocery','HealthPersonalCare','HomeGarden','HomeImprovement','Jewelry','KindleStore','Kitchen','Lighting','Marketplace','MP3Downloads','Music','MusicTracks','MusicalInstruments','OfficeProducts','OutdoorLiving','Outlet','PetSupplies','PCHardware','Shoes','Software','SoftwareVideoGames','SportingGoods','Tools','Toys','VHS','Video','VideoGames','Watches',
+		'All',
+		'Apparel',
+		'Appliances',
+		'Automotive',
+		'Baby',
+		'Beauty',
+		'Blended',
+		'Books',
+		'Classical',
+		'DVD',
+		'Electronics',
+		'Grocery',
+		'HealthPersonalCare',
+		'HomeGarden',
+		'HomeImprovement',
+		'Jewelry',
+		'KindleStore',
+		'Kitchen',
+		'Lighting',
+		'Marketplace',
+		'MP3Downloads',
+		'Music',
+		'MusicTracks',
+		'MusicalInstruments',
+		'OfficeProducts',
+		'OutdoorLiving',
+		'Outlet',
+		'PetSupplies',
+		'PCHardware',
+		'Shoes',
+		'Software',
+		'SoftwareVideoGames',
+		'SportingGoods',
+		'Tools',
+		'Toys',
+		'VHS',
+		'Video',
+		'VideoGames',
+		'Watches'
 	);
 
 	private $mErrors = array();
@@ -163,12 +201,12 @@ class AmazonAPI
 	 *
 	 * @param	keywords			Keywords which we're requesting
 	 * @param	searchIndex			Name of search index (category) requested. NULL if searching all.
-	 * @param	sortBySalesRank		True if sorting by sales rank, false otherwise.
+	 * @param	sortBy				Category to sort by, only used if searchIndex is not 'All'
 	 * @param	condition			Condition of item. Valid conditions : Used, Collectible, Refurbished, All
 	 *
 	 * @return	mixed				SimpleXML object, array of data or false if failure.
 	 */
-	public function ItemSearch( $keywords, $searchIndex = NULL, $sortBySalesRank = true, $condition = 'New' )
+	public function ItemSearch( $keywords, $searchIndex = NULL, $sortBy = NULL, $condition = 'New' )
 	{
 		// Set the values for some of the parameters.
 		$operation = "ItemSearch";
@@ -192,9 +230,9 @@ class AmazonAPI
 			// Searching for specific index
 			$request .= "&SearchIndex=" . $searchIndex;
 
-			// If we're sorting by sales rank
-			if ( $sortBySalesRank && ( $searchIndex != 'All' ) )
-				$request .= "&Sort=salesrank";
+			// Set sort category
+			if ( $sortBy && ( $searchIndex != 'All' ) )
+				$request .= "&Sort=" . $sortBy;
 		}
 
 		// Need to sign the request now

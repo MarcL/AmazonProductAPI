@@ -1,1 +1,6 @@
-test.php
+# Composer specific
+composer.phar
+/vendor/
+
+# Avoid commiting secret keys
+secretKeys.php
