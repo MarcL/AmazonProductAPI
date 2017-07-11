@@ -120,7 +120,7 @@ class AmazonAPI
 	 * Sets the locale for the endpoints
 	 *
 	 * @param	locale		Set to a valid AWS locale - see link below.
-	 * @link 	http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/Locales.html
+	 * @link 	http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html
 	 *
 	 * @return	None
 	 */

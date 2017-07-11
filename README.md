@@ -50,34 +50,43 @@ $amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
 
 **Note:** Keep your Amazon keys safe. Either use environment variables or include from a file that you don't check into GitHub.
 
-It supports all Amazon regions:
+### Locale
 
-* Canada ('ca')
-* China ('cn')
-* Germany ('de')
-* Spain ('es')
-* France ('fr')
-* Italy ('it')
-* Japan ('jp')
-* United Kingdom ('uk')
-* United States ('us').
+This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set them using `SetLocale`:
 
-The default is UK but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
+It defaults to US but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
 
 ```php
-$amazonAPI->SetLocale('us');
+$amazonAPI->SetLocale('uk');
 ```
+
+At this time, these are the current supported locales:
+
+* Brazil ('br')
+* Canada ('ca')
+* China ('cn')
+* France ('fr')
+* Germany ('de')
+* India ('in')
+* Italy ('it')
+* Japan ('jp')
+* Mexico ('mx')
+* Spain ('es')
+* United Kingdom ('uk')
+* United States ('us')
+
+### SSL
 
 By default it will use HTTPS, but if you don't want to use SSL then call the following before using the product methods and it will connect to the HTTP endpoints:
 
-```
+```php
 $amazonAPI->SetSSL(false);
 ```
 
-**Note:** I have no idea why I originally had this method. Perhaps the Amazon Product API didn't use SSL at one point. I've enabled HTTPS as default now but you can turn it off if you need to. I assume you won't.
+**Note:** I have no idea why I originally had this method. Perhaps the Amazon Product API didn't use SSL at one point. I've enabled HTTPS as default now but you can turn it off if you need to. I assume you won't need to but I've left it in the API.
 
 ### Item Search
-To search for an item use the ItemSearch method:
+To search for an item use the `ItemSearch()` method:
 
 ```php
 // Search for harry potter items in all categories
@@ -89,7 +98,7 @@ $items = $amazonAPI->ItemSearch('harry potter', 'Books');
 
 #### Default sort
 
-By default, the `ItemSearch` method will search by featured. If you want to sort by another category then pass a 3rd parameter with the name of the category you wish to sort by. These differ by category type but the two you'll probably need are `price` (sort by price low to high) or `-price` (sort by price high to low). See [ItemSearch Sort Values](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/APPNDX_SortValuesArticle.html) for more details.
+By default, the `ItemSearch()` method will search by featured. If you want to sort by another category then pass a 3rd parameter with the name of the category you wish to sort by. These differ by category type but the two you'll probably need are `price` (sort by price low to high) or `-price` (sort by price high to low). See [ItemSearch Sort Values](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/APPNDX_SortValuesArticle.html) for more details.
 
 ```php
 // Search for harry potter items in Books category, sort by low to high
@@ -107,7 +116,7 @@ $searchCategories = $amazonAPI->GetValidSearchNames();
 ```
 
 ### Item Lookup
-To look up product using the product ASIN number use ItemLookup:
+To look up product using the product ASIN number use `ItemLookup()`:
 
 ```php
 // Retrieve specific item by id
@@ -118,7 +127,7 @@ $asinIds = array('B003U6I396', 'B003U6I397', 'B003U6I398');
 $items = $amazonAPI->ItemLookUp($asinIds);
 ```
 
-## Returned data
+### Returned data
 By default the data will be returned as SimpleXML nodes. However if you call `SetRetrieveAsArray()` then a simplified array of items will be returned. For example:
 
 ```php
