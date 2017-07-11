@@ -44,7 +44,7 @@ It supports all Amazon regions:
 * United Kingdom ('uk')
 * United States ('us').
 
-The default is UK but to set the locale call SetLocale __before__ calling the product methods. E.g.
+The default is UK but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
 
 ```php
 $amazonAPI->SetLocale('us');
@@ -62,14 +62,26 @@ $amazonAPI->SetSSL(false);
 To search for an item use the ItemSearch method:
 
 ```php
-// Search for Harry Potter items in all categories
-$items = $amazonAPI->ItemSearch( 'harry potter' );
+// Search for harry potter items in all categories
+$items = $amazonAPI->ItemSearch('harry potter');
 
-// Search for Harry Potter items in Books category only
-$items = $amazonAPI->ItemSearch( 'harry potter', 'Books' );
+// Search for harry potter items in Books category only
+$items = $amazonAPI->ItemSearch('harry potter', 'Books');
 ```
 
-To determine valid categories for search call GetValidSearchNames() :
+#### Default sort
+
+By default, the `ItemSearch` method will search by featured. If you want to sort by another category then pass a 3rd parameter with the name of the category you wish to sort by. These differ by category type but the two you'll probably need are `price` (sort by price low to high) or `-price` (sort by price high to low). See [ItemSearch Sort Values](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/APPNDX_SortValuesArticle.html) for more details.
+
+```php
+// Search for harry potter items in Books category, sort by low to high
+$items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
+
+// Search for harry potter items in Books category, sort by high to low
+$items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
+```
+
+To determine valid categories for search call `GetValidSearchNames()`:
 
 ```php
 // Get an array of valid search categories we can use
@@ -81,11 +93,11 @@ To look up product using the product ASIN number use ItemLookup:
 
 ```php
 // Retrieve specific item by id
-$items = $amazonAPI->ItemLookUp( 'B003U6I396' );
+$items = $amazonAPI->ItemLookUp('B003U6I396');
 
 // Retrieve a list of items by ids
-$asinIds = array( 'B003U6I396', 'B003U6I397', 'B003U6I398' );
-$items = $amazonAPI->ItemLookUp( $asinIds );
+$asinIds = array('B003U6I396', 'B003U6I397', 'B003U6I398');
+$items = $amazonAPI->ItemLookUp($asinIds);
 ```
 
 ## Returned data
@@ -93,9 +105,9 @@ By default the data will be returned as SimpleXML nodes. However if you call `Se
 
 ```php
 // Return XML data
-$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
-$items = $amazonAPI->ItemSearch( 'harry potter' );
-var_dump( $items );
+$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
+$items = $amazonAPI->ItemSearch('harry potter');
+var_dump($items);
 ```
 
 This will output:
@@ -115,10 +127,10 @@ class SimpleXMLElement#2 (2) {
 
 ```php
 // Return simplified data
-$amazonAPI = new AmazonAPI( $keyId, $secretKey, $associateId );
+$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
 $amazonAPI->SetRetrieveAsArray();
-$items = $amazonAPI->ItemSearch( 'harry potter' );
-var_dump( $items );
+$items = $amazonAPI->ItemSearch('harry potter');
+var_dump($items);
 ```
 
 Returning simplified data gives a PHP array
@@ -158,9 +170,15 @@ array(10) {
 ```
 
 ## TODO
+
 * Need to make the simplified data less hardcoded!
 * Make this a Composer package
 * Add unit tests
 
 ## Thanks
+
 This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake).
+
+## LICENSE
+
+See [LICENSE](LICENSE)
