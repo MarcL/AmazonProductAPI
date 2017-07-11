@@ -7,6 +7,8 @@
  *
  */
 
+namespace MarcL;
+
 class AmazonAPI
 {
 	private $m_amazonUrl = '';
