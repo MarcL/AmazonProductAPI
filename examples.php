@@ -1,7 +1,8 @@
 <?php
 
 // Include the AmazonAPI code
-include_once('./AmazonAPI.php');
+include_once('./src/AmazonAPI.php');
+use MarcL\AmazonAPI;
 
 // Should load these from environment variables
 include_once('./secretKeys.php');
