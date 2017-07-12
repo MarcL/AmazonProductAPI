@@ -18,15 +18,18 @@ class AmazonAPI
 
 	// AWS endpoint for each locale
 	private $m_localeTable = array(
-		'ca'	=>	'webservices.amazon.ca/onca/xml',
-		'cn'	=>	'webservices.amazon.cn/onca/xml',
-		'de'	=>	'webservices.amazon.de/onca/xml',
-		'es'	=>	'webservices.amazon.es/onca/xml',
-		'fr'	=>	'webservices.amazon.fr/onca/xml',
-		'it'	=>	'webservices.amazon.it/onca/xml',
-		'jp'	=>	'webservices.amazon.jp/onca/xml',
-		'uk'	=>	'webservices.amazon.co.uk/onca/xml',
-		'us'	=>	'webservices.amazon.com/onca/xml',
+		'br' => 'webservices.amazon.br/onca/xml',
+		'ca' =>	'webservices.amazon.ca/onca/xml',
+		'cn' =>	'webservices.amazon.cn/onca/xml',
+		'fr' =>	'webservices.amazon.fr/onca/xml',
+		'de' =>	'webservices.amazon.de/onca/xml',
+		'in' =>	'webservices.amazon.in/onca/xml',
+		'it' =>	'webservices.amazon.it/onca/xml',
+		'jp' =>	'webservices.amazon.jp/onca/xml',
+		'mx' =>	'webservices.amazon.mx/onca/xml',
+		'es' =>	'webservices.amazon.es/onca/xml',
+		'uk' =>	'webservices.amazon.co.uk/onca/xml',
+		'us' =>	'webservices.amazon.com/onca/xml'
 	);
 
 	// API key ID
@@ -83,8 +86,18 @@ class AmazonAPI
 
 	private $mErrors = array();
 
-	public function __construct( $keyId, $secretKey, $associateTag )
+	private function throwIfNull($parameterValue, $parameterName) {
+		if ($parameterValue == NULL) {
+			throw new \Exception($parameterName . ' should be defined');
+		}
+	}
+
+	public function __construct($keyId, $secretKey, $associateTag)
 	{
+		$this->throwIfNull($keyId, 'Amazon key ID');
+		$this->throwIfNull($secretKey, 'Amazon secret key');
+		$this->throwIfNull($associateTag, 'Amazon associate tag');
+
 		// Setup the AWS credentials
 		$this->m_keyId			= $keyId;
 		$this->m_secretKey		= $secretKey;

@@ -19,7 +19,7 @@
         "issues": "https://github.com/MarcL/AmazonProductAPI/issues"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.8.*"
+        "phpunit/phpunit": "6.1.*"
     },
     "autoload": {
         "psr-4": {
