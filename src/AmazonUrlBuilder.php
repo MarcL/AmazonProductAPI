@@ -8,7 +8,7 @@ class AmazonUrlBuilder {
 
     public function __construct($url, $secretKey) {
         $this->secretKey = $secretKey;
-        $this->url = $this->GetSignedRequest($url);
+        $this->url = $url;
     }
 
 	/**
@@ -63,8 +63,8 @@ class AmazonUrlBuilder {
 	    return $newUrl;
 	}
 
-    public function get() {
-        return($this->url);
+    public function generate() {
+        return($this->GetSignedRequest($this->url));
     }
 }
 

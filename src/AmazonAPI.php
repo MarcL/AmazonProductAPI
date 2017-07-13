@@ -374,7 +374,7 @@ class AmazonAPI
 	private function GetSignedRequest($request) {
 		$urlBuilder = new AmazonUrlBuilder($request, $this->m_secretKey);
 
-		return($urlBuilder->get());
+		return($urlBuilder->generate());
 	}
 
 	/**
