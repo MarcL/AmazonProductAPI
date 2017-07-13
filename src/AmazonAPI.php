@@ -209,6 +209,28 @@ class AmazonAPI
 	}
 
 	/**
+	 * Creates an unsigned Amazon URL
+	 *
+	 * @param	 params 	Array of request parameters
+	 *
+	 * @return	string		Unsigned URL of AWS request
+	 */
+	private function CreateUnsignedAmazonUrl($params) {
+		$baseParams = array(
+			'Service' => 'AWSECommerceService',
+			'AssociateTag' => $this->m_associateTag,
+			'AWSAccessKeyId' => $this->m_keyId
+		);
+
+		$buildParams = array_merge($baseParams, $params);
+
+		$request = $this->m_amazonUrl . '?' .http_build_query($buildParams);
+
+		return($request);
+
+	}
+
+	/**
 	 * Search for items
 	 *
 	 * @param	keywords			Keywords which we're requesting
@@ -219,30 +241,16 @@ class AmazonAPI
 	 * @return	mixed				SimpleXML object, array of data or false if failure.
 	 */
 	public function ItemSearch($keywords, $searchIndex = NULL, $sortBy = NULL, $condition = 'New') {
-		// Set the values for some of the parameters.
-		$operation = "ItemSearch";
-		$responseGroup = "ItemAttributes,Offers,Images";
+		$params = array(
+			'Operation' => 'ItemSearch',
+			'ResponseGroup' => 'ItemAttributes,Offers,Images',
+			'Keywords' => $keywords,
+			'Condition' => $condition,
+			'SearchIndex' => empty($searchIndex) ? 'All' : $searchIndex,
+			'Sort' => $sortBy && ($searchIndex != 'All') ? $sortBy : NULL
+		);
 
-		//Define the request
-		$request= $this->GetBaseUrl()
-		   . "&Operation=" . $operation
-		   . "&Keywords=" . $keywords
-		   . "&ResponseGroup=" . $responseGroup
-		   . "&Condition=" . $condition;
-
-		// Assume we're searching in all if an index isn't passed
-		if (empty($searchIndex)) {
-			// Search for all
-			$request .= "&SearchIndex=All";
-		}
-		else {
-			// Searching for specific index
-			$request .= "&SearchIndex=" . $searchIndex;
-
-			// Set sort category
-			if ($sortBy && ($searchIndex != 'All'))
-				$request .= "&Sort=" . $sortBy;
-		}
+		$request = $this->CreateUnsignedAmazonUrl($params);
 
 		return($this->MakeAndParseRequest($request));
 	}
@@ -260,21 +268,15 @@ class AmazonAPI
 			$asinList = implode(',', $asinList);
 		}
 
-		// Set the values for some of the parameters.
-		$operation = "ItemLookup";
-		$responseGroup = "ItemAttributes,Offers,Reviews,Images,EditorialReview";
+		$params = array(
+			'Operation' => 'ItemLookup',
+			'ResponseGroup' => 'ItemAttributes,Offers,Reviews,Images,EditorialReview',
+			'ReviewSort' => '-OverallRating',
+			'ItemId' => $asinList,
+			'MerchantId' => ($onlyFromAmazon == true) ? 'Amazon' : 'All'
+		);
 
-		// Determine whether we just want Amazon results only or not
-		$merchantId = ($onlyFromAmazon == true) ? 'Amazon' : 'All';
-
-		$reviewSort = '-OverallRating';
-		//Define the request
-		$request = $this->GetBaseUrl()
-		   . "&ItemId=" . $asinList
-		   . "&Operation=" . $operation
-		   . "&ResponseGroup=" . $responseGroup
-		   . "&ReviewSort=" . $reviewSort
-		   . "&MerchantId=" . $merchantId;
+		$request = $this->CreateUnsignedAmazonUrl($params);
 
 		return($this->MakeAndParseRequest($request));
 	}
@@ -330,24 +332,6 @@ class AmazonAPI
 		}
 
 		return($items);
-	}
-
-	/**
-	 * Determines the base address of the request
-	 *
-	 * @param	None
-	 *
-	 * @return	string		Base URL of AWS request
-	 */
-	private function GetBaseUrl() {
-		//Define the request
-		$request=
-		     $this->m_amazonUrl
-		   . "?Service=AWSECommerceService"
-		   . "&AssociateTag=" . $this->m_associateTag
-		   . "&AWSAccessKeyId=" . $this->m_keyId;
-
-		return($request);
 	}
 
 	/**
