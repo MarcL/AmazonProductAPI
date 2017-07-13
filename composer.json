@@ -25,5 +25,10 @@
         "psr-4": {
             "MarcL\\": "src/"
         }
-    }
-}
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MarcL\\": "src/",
+            "tests\\": "tests/"
+        }
+    }}

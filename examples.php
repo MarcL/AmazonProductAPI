@@ -1,7 +1,7 @@
 <?php
 
-// Include the AmazonAPI code
-include_once('./src/AmazonAPI.php');
+require('vendor/autoload.php');
+
 use MarcL\AmazonAPI;
 
 // Should load these from environment variables
