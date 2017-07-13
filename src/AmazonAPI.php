@@ -176,18 +176,36 @@ class AmazonAPI
 	 * @return	mixed		SimpleXML object or false if failure.
 	 */
 	private function MakeRequest($url) {
+		$signedUrl = $this->GetSignedRequest($url);
+
 		try {
 			$request = new CurlHttpRequest();
-			$response = $request->execute($url);
+			$response = $request->execute($signedUrl);
 
 			$parsedXml = simplexml_load_string($response);
 
 			return($parsedXml);
 		} catch(\Exception $error) {
-			$this->AddError("Error downloading data : $url : " . $error->getMessage());
+			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
 		}
 
 		return(false);
+	}
+
+	private function MakeAndParseRequest($url) {
+		$parsedXml = $this->MakeRequest($url);
+		if ($parsedXml === false) {
+			return(false);
+		}
+
+		if ($this->m_retrieveArray) {
+			$items = $this->RetrieveItems($parsedXml);
+		}
+		else {
+			$items = $parsedXml;
+		}
+
+		return($items);
 	}
 
 	/**
@@ -226,23 +244,7 @@ class AmazonAPI
 				$request .= "&Sort=" . $sortBy;
 		}
 
-		// Need to sign the request now
-		$signedUrl = $this->GetSignedRequest($request);
-
-		// Get the response from the signed URL
-		$parsedXml = $this->MakeRequest($signedUrl);
-		if ($parsedXml === false) {
-			return(false);
-		}
-
-		if ($this->m_retrieveArray) {
-			$items = $this->RetrieveItems($parsedXml);
-		}
-		else {
-			$items = $parsedXml;
-		}
-
-		return($items);
+		return($this->MakeAndParseRequest($request));
 	}
 
 	/**
@@ -274,22 +276,7 @@ class AmazonAPI
 		   . "&ReviewSort=" . $reviewSort
 		   . "&MerchantId=" . $merchantId;
 
-		// Need to sign the request now
-		$signedUrl = $this->GetSignedRequest($request);
-
-		// Get the response from the signed URL
-		$parsedXml = $this->MakeRequest($signedUrl);
-		if ($parsedXml === false) {
-			return(false);
-		}
-
-		if ($this->m_retrieveArray) {
-			$items = $this->RetrieveItems($parsedXml);
-		}
-		else {
-			$items = $parsedXml;
-		}
-		return($items);
+		return($this->MakeAndParseRequest($request));
 	}
 
 	/**
