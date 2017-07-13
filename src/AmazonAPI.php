@@ -109,36 +109,14 @@ class AmazonAPI
 		$this->SetLocale('uk');
 	}
 
-	/**
-	 * Enable or disable SSL endpoints
-	 *
-	 * @param	useSSL 		True if using SSL, false otherwise
-	 *
-	 * @return	None
-	 */
 	public function SetSSL($useSSL = true) {
 		$this->m_useSSL = $useSSL;
 	}
 
-	/**
-	 * Enable or disable retrieving items array rather than XML
-	 *
-	 * @param	retrieveArray	True if retrieving as array, false otherwise.
-	 *
-	 * @return	None
-	 */
 	public function SetRetrieveAsArray($retrieveArray = true) {
 		$this->m_retrieveArray	= $retrieveArray;
 	}
 
-	/**
-	 * Sets the locale for the endpoints
-	 *
-	 * @param	locale		Set to a valid AWS locale - see link below.
-	 * @link 	http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html
-	 *
-	 * @return	None
-	 */
 	public function SetLocale($locale) {
 		// Check we have a locale in our table
 		if (!array_key_exists($locale, $this->m_localeTable))
@@ -157,19 +135,13 @@ class AmazonAPI
 			$this->m_amazonUrl = 'http://' . $this->m_localeTable[$locale];
 	}
 
-	/**
-	 * Return valid search names
-	 *
-	 * @param	None
-	 *
-	 * @return	Array 	Array of valid string names
-	 */
 	public function GetValidSearchNames() {
 		return($this->mValidSearchNames);
 	}
 
 	private function MakeSignedRequest($url) {
-		$signedUrl = $this->GetSignedRequest($url);
+		$urlBuilder = new AmazonUrlBuilder($url, $this->m_secretKey);
+		$signedUrl = $urlBuilder->generate();
 
 		try {
 			$request = new CurlHttpRequest();
@@ -201,13 +173,6 @@ class AmazonAPI
 		return($items);
 	}
 
-	/**
-	 * Creates an unsigned Amazon URL
-	 *
-	 * @param	 params 	Array of request parameters
-	 *
-	 * @return	string		Unsigned URL of AWS request
-	 */
 	private function CreateUnsignedAmazonUrl($params) {
 		$baseParams = array(
 			'Service' => 'AWSECommerceService',
@@ -327,38 +292,10 @@ class AmazonAPI
 		return($items);
 	}
 
-	/**
-	  * This function will take an existing Amazon request and change it so that it will be usable
-	  * with the new authentication.
-	  *
-	  * @param string $request - your existing request URI
-	  *
-	  * @link http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
-	  */
-	private function GetSignedRequest($request) {
-		$urlBuilder = new AmazonUrlBuilder($request, $this->m_secretKey);
-
-		return($urlBuilder->generate());
-	}
-
-	/**
-	 * Adds error to an error array
-	 *
-	 * @param	error	Error string
-	 *
-	 * @return	None
-	 */
 	private function AddError($error) {
 		array_push($this->mErrors, $error);
 	}
 
-	/**
-	 * Returns array of errors
-	 *
-	 * @param	None
-	 *
-	 * @return	Array		Array of errors. Empty array if none found
-	 */
 	public function GetErrors() {
 		return($this->mErrors);
 	}
