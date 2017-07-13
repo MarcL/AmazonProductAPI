@@ -16,12 +16,11 @@ class AmazonUrlBuilder {
 	  * with the new authentication.
 	  *
 	  * @param string $request - your existing request URI
-	  * @param string $access_key - your Amazon AWS access key
 	  * @param string $version - (optional) the version of the service you are using
 	  *
 	  * @link http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
 	  */
-	private function GetSignedRequest($request, $access_key = false, $version = '2011-08-01') {
+	private function GetSignedRequest($request, $version = '2011-08-01') {
 	    // Get a nice array of elements to work with
 	    $uri_elements = parse_url($request);
 
@@ -34,9 +33,6 @@ class AmazonUrlBuilder {
 	    // Add the new required paramters
 	    $parameters['Timestamp'] = gmdate("Y-m-d\TH:i:s\Z");
 	    $parameters['Version'] = $version;
-	    if (strlen($access_key) > 0) {
-	        $parameters['AWSAccessKeyId'] = $access_key;
-	    }
 
 	    // The new authentication requirements need the keys to be sorted
 	    ksort($parameters);
