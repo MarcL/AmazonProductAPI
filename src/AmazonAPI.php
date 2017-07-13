@@ -168,14 +168,7 @@ class AmazonAPI
 		return($this->mValidSearchNames);
 	}
 
-	/**
-	 * Return data from AWS
-	 *
-	 * @param	url			URL request
-	 *
-	 * @return	mixed		SimpleXML object or false if failure.
-	 */
-	private function MakeRequest($url) {
+	private function MakeSignedRequest($url) {
 		$signedUrl = $this->GetSignedRequest($url);
 
 		try {
@@ -193,7 +186,7 @@ class AmazonAPI
 	}
 
 	private function MakeAndParseRequest($url) {
-		$parsedXml = $this->MakeRequest($url);
+		$parsedXml = $this->MakeSignedRequest($url);
 		if ($parsedXml === false) {
 			return(false);
 		}
