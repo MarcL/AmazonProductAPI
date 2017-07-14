@@ -14,34 +14,11 @@ use MarcL\AmazonUrlBuilder;
 
 class AmazonAPI
 {
-	private $m_amazonUrl = '';
 	private $m_locale = 'uk';
 	private $m_retrieveArray = false;
-	private $m_useSSL = true;
 
-	// AWS endpoint for each locale
-	private $m_localeTable = array(
-		'br' => 'webservices.amazon.br/onca/xml',
-		'ca' =>	'webservices.amazon.ca/onca/xml',
-		'cn' =>	'webservices.amazon.cn/onca/xml',
-		'fr' =>	'webservices.amazon.fr/onca/xml',
-		'de' =>	'webservices.amazon.de/onca/xml',
-		'in' =>	'webservices.amazon.in/onca/xml',
-		'it' =>	'webservices.amazon.it/onca/xml',
-		'jp' =>	'webservices.amazon.jp/onca/xml',
-		'mx' =>	'webservices.amazon.mx/onca/xml',
-		'es' =>	'webservices.amazon.es/onca/xml',
-		'uk' =>	'webservices.amazon.co.uk/onca/xml',
-		'us' =>	'webservices.amazon.com/onca/xml'
-	);
-
-	// API key ID
 	private $m_keyId		= NULL;
-
-	// API Secret Key
 	private $m_secretKey	= NULL;
-
-	// AWS associate tag
 	private $m_associateTag = NULL;
 
 	// Valid names that can be used for search
@@ -109,39 +86,26 @@ class AmazonAPI
 		$this->SetLocale('uk');
 	}
 
-	public function SetSSL($useSSL = true) {
-		$this->m_useSSL = $useSSL;
-	}
-
 	public function SetRetrieveAsArray($retrieveArray = true) {
 		$this->m_retrieveArray	= $retrieveArray;
 	}
 
 	public function SetLocale($locale) {
-		// Check we have a locale in our table
-		if (!array_key_exists($locale, $this->m_localeTable))
-		{
-			// If not then just assume it's US
-			$locale = 'us';
-		}
-
-		// Set the URL for this locale
 		$this->m_locale = $locale;
-
-		// Check for SSL
-		if ($this->m_useSSL)
-			$this->m_amazonUrl = 'https://' . $this->m_localeTable[$locale];
-		else
-			$this->m_amazonUrl = 'http://' . $this->m_localeTable[$locale];
 	}
 
 	public function GetValidSearchNames() {
 		return($this->mValidSearchNames);
 	}
 
-	private function MakeSignedRequest($url) {
-		$urlBuilder = new AmazonUrlBuilder($url, $this->m_secretKey);
-		$signedUrl = $urlBuilder->generate();
+	private function MakeSignedRequest($params) {
+		$urlBuilder = new AmazonUrlBuilder(
+			$this->m_keyId,
+			$this->m_secretKey,
+			$this->m_associateTag,
+			$this->m_locale
+		);
+		$signedUrl = $urlBuilder->generate($params);
 
 		try {
 			$request = new CurlHttpRequest();
@@ -157,8 +121,8 @@ class AmazonAPI
 		return(false);
 	}
 
-	private function MakeAndParseRequest($url) {
-		$parsedXml = $this->MakeSignedRequest($url);
+	private function MakeAndParseRequest($params) {
+		$parsedXml = $this->MakeSignedRequest($params);
 		if ($parsedXml === false) {
 			return(false);
 		}
@@ -171,21 +135,6 @@ class AmazonAPI
 		}
 
 		return($items);
-	}
-
-	private function CreateUnsignedAmazonUrl($params) {
-		$baseParams = array(
-			'Service' => 'AWSECommerceService',
-			'AssociateTag' => $this->m_associateTag,
-			'AWSAccessKeyId' => $this->m_keyId
-		);
-
-		$buildParams = array_merge($baseParams, $params);
-
-		$request = $this->m_amazonUrl . '?' .http_build_query($buildParams);
-
-		return($request);
-
 	}
 
 	/**
@@ -208,9 +157,7 @@ class AmazonAPI
 			'Sort' => $sortBy && ($searchIndex != 'All') ? $sortBy : NULL
 		);
 
-		$request = $this->CreateUnsignedAmazonUrl($params);
-
-		return($this->MakeAndParseRequest($request));
+		return($this->MakeAndParseRequest($params));
 	}
 
 	/**
@@ -234,9 +181,7 @@ class AmazonAPI
 			'MerchantId' => ($onlyFromAmazon == true) ? 'Amazon' : 'All'
 		);
 
-		$request = $this->CreateUnsignedAmazonUrl($params);
-
-		return($this->MakeAndParseRequest($request));
+		return($this->MakeAndParseRequest($params));
 	}
 
 	/**

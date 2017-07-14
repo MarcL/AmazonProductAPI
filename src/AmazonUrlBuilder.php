@@ -3,13 +3,54 @@
 namespace MarcL;
 
 class AmazonUrlBuilder {
-    private $url = NULL;
     private $secretKey = NULL;
+    private $keyId = NULL;
+    private $associateTag = NULL;
+    private $amazonTld = NULL;
 
-    public function __construct($url, $secretKey) {
+	private $localeTable = array(
+		'br' => 'webservices.amazon.br/onca/xml',
+		'ca' =>	'webservices.amazon.ca/onca/xml',
+		'cn' =>	'webservices.amazon.cn/onca/xml',
+		'fr' =>	'webservices.amazon.fr/onca/xml',
+		'de' =>	'webservices.amazon.de/onca/xml',
+		'in' =>	'webservices.amazon.in/onca/xml',
+		'it' =>	'webservices.amazon.it/onca/xml',
+		'jp' =>	'webservices.amazon.jp/onca/xml',
+		'mx' =>	'webservices.amazon.mx/onca/xml',
+		'es' =>	'webservices.amazon.es/onca/xml',
+		'uk' =>	'webservices.amazon.co.uk/onca/xml',
+		'us' =>	'webservices.amazon.com/onca/xml'
+	);
+
+    public function __construct($keyId, $secretKey, $associateTag, $locale = 'us') {
         $this->secretKey = $secretKey;
-        $this->url = $url;
+        $this->amazonTld = $this->GetAmazonApiEndpoint($locale);
+        $this->associateTag = $associateTag;
+        $this->keyId = $keyId;
     }
+
+    private function GetAmazonApiEndpoint($locale) {
+		if (!array_key_exists($locale, $this->localeTable)) {
+			$locale = 'us';
+		}
+
+        return('https://' . $this->localeTable[$locale]);
+    }
+
+	private function CreateUnsignedAmazonUrl($params) {
+		$baseParams = array(
+			'Service' => 'AWSECommerceService',
+			'AssociateTag' => $this->associateTag,
+			'AWSAccessKeyId' => $this->keyId
+		);
+
+		$buildParams = array_merge($baseParams, $params);
+
+		$request = $this->amazonTld . '?' .http_build_query($buildParams);
+
+		return($request);
+	}
 
 	/**
 	  * This function will take an existing Amazon request and change it so that it will be usable
@@ -59,8 +100,10 @@ class AmazonUrlBuilder {
 	    return $newUrl;
 	}
 
-    public function generate() {
-        return($this->GetSignedRequest($this->url));
+    public function generate($params) {
+        $unsignedRequest = $this->CreateUnsignedAmazonUrl($params);
+
+        return($this->GetSignedRequest($unsignedRequest));
     }
 }
 
