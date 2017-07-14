@@ -45,20 +45,16 @@ $keyId = 'YOUR-AWS-KEY';
 $secretKey = 'YOUR-AWS-SECRET-KEY';
 $associateId = 'YOUR-AMAZON-ASSOCIATE-ID';
 
-$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
+$locale = 'us'; // Default is 'uk'
+
+$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId, $locale);
 ```
 
 **Note:** Keep your Amazon keys safe. Either use environment variables or include from a file that you don't check into GitHub.
 
 ### Locale
 
-This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set them using `SetLocale`:
-
-It defaults to US but to set the locale call `SetLocale()` __before__ calling the product methods. E.g.
-
-```php
-$amazonAPI->SetLocale('uk');
-```
+This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set it as you construct the class.
 
 At this time, these are the current supported locales:
 
@@ -74,16 +70,6 @@ At this time, these are the current supported locales:
 * Spain ('es')
 * United Kingdom ('uk')
 * United States ('us')
-
-### SSL
-
-By default it will use HTTPS, but if you don't want to use SSL then call the following before using the product methods and it will connect to the HTTP endpoints:
-
-```php
-$amazonAPI->SetSSL(false);
-```
-
-**Note:** I have no idea why I originally had this method. Perhaps the Amazon Product API didn't use SSL at one point. I've enabled HTTPS as default now but you can turn it off if you need to. I assume you won't need to but I've left it in the API.
 
 ### Item Search
 To search for an item use the `ItemSearch()` method:

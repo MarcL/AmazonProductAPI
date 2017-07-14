@@ -20,6 +20,7 @@ class AmazonAPI
 	private $m_keyId		= NULL;
 	private $m_secretKey	= NULL;
 	private $m_associateTag = NULL;
+	private $urlBuilder = NULL;
 
 	// Valid names that can be used for search
 	private $mValidSearchNames = array(
@@ -72,7 +73,7 @@ class AmazonAPI
 		}
 	}
 
-	public function __construct($keyId, $secretKey, $associateTag) {
+	public function __construct($keyId, $secretKey, $associateTag, $locale = 'us') {
 		$this->throwIfNull($keyId, 'Amazon key ID');
 		$this->throwIfNull($secretKey, 'Amazon secret key');
 		$this->throwIfNull($associateTag, 'Amazon associate tag');
@@ -81,17 +82,18 @@ class AmazonAPI
 		$this->m_keyId			= $keyId;
 		$this->m_secretKey		= $secretKey;
 		$this->m_associateTag	= $associateTag;
+		$this->m_locale 		= $locale;
 
-		// Set UK as locale by default
-		$this->SetLocale('uk');
+		$this->urlBuilder = new AmazonUrlBuilder(
+			$this->m_keyId,
+			$this->m_secretKey,
+			$this->m_associateTag,
+			$this->m_locale
+		);
 	}
 
 	public function SetRetrieveAsArray($retrieveArray = true) {
 		$this->m_retrieveArray	= $retrieveArray;
-	}
-
-	public function SetLocale($locale) {
-		$this->m_locale = $locale;
 	}
 
 	public function GetValidSearchNames() {
@@ -99,13 +101,7 @@ class AmazonAPI
 	}
 
 	private function MakeSignedRequest($params) {
-		$urlBuilder = new AmazonUrlBuilder(
-			$this->m_keyId,
-			$this->m_secretKey,
-			$this->m_associateTag,
-			$this->m_locale
-		);
-		$signedUrl = $urlBuilder->generate($params);
+		$signedUrl = $this->urlBuilder->generate($params);
 
 		try {
 			$request = new CurlHttpRequest();
@@ -127,14 +123,10 @@ class AmazonAPI
 			return(false);
 		}
 
-		if ($this->m_retrieveArray) {
-			$items = $this->RetrieveItems($parsedXml);
-		}
-		else {
-			$items = $parsedXml;
-		}
-
-		return($items);
+		return($this->m_retrieveArray
+			? $this->RetrieveItems($parsedXml)
+			: $parsedXml
+		);
 	}
 
 	/**

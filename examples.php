@@ -8,9 +8,7 @@ use MarcL\AmazonAPI;
 include_once('./secretKeys.php');
 
 // Setup a new instance of the AmazonAPI with your keys
-$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
-$amazonAPI->SetLocale('uk');
-$amazonAPI->SetSSL(true);
+$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId, 'uk');
 $amazonAPI->SetRetrieveAsArray();
 
 // Item Search:
