@@ -20,22 +20,32 @@ $urlBuilder = new AmazonUrlBuilder(
 $amazonAPI = new AmazonAPI($urlBuilder);
 $amazonAPI->SetRetrieveAsArray();
 
+// Need to avoid triggering Amazon API throttling
+$sleepTime = 1.5;
+
 // Item Search:
 // Harry Potter in Books, sort by featured
 $items = $amazonAPI->ItemSearch('harry potter', 'Books');
 print('>> Harry Potter in Books, sort by featured');
 var_dump($items);
 
+sleep($sleepTime);
+
 // Harry Potter in Books, sort by price low to high
 $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
 print('>> Harry Potter in Books, sort by price low to high');
 var_dump($items);
+
+sleep($sleepTime);
 
 // Harry Potter in Books, sort by price high to low
 $items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
 print('>> Harry Potter in Books, sort by price high to low');
 var_dump($items);
 
+sleep($sleepTime);
+
+// Amazon echo, only in Amazon
 $items = $amazonAPI->ItemLookUp('B01GAGVIE4', true);
 print('>> Look up specific ASIN\n');
 var_dump($items);
