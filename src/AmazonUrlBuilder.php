@@ -6,7 +6,7 @@ class AmazonUrlBuilder {
     private $secretKey = NULL;
     private $keyId = NULL;
     private $associateTag = NULL;
-    private $amazonTld = NULL;
+    private $amazonEndpoint = NULL;
 
 	private $localeTable = array(
 		'br' => 'webservices.amazon.br/onca/xml',
@@ -16,8 +16,8 @@ class AmazonUrlBuilder {
 		'de' =>	'webservices.amazon.de/onca/xml',
 		'in' =>	'webservices.amazon.in/onca/xml',
 		'it' =>	'webservices.amazon.it/onca/xml',
-		'jp' =>	'webservices.amazon.jp/onca/xml',
-		'mx' =>	'webservices.amazon.mx/onca/xml',
+		'jp' =>	'webservices.amazon.co.jp/onca/xml',
+		'mx' =>	'webservices.amazon.com.mx/onca/xml',
 		'es' =>	'webservices.amazon.es/onca/xml',
 		'uk' =>	'webservices.amazon.co.uk/onca/xml',
 		'us' =>	'webservices.amazon.com/onca/xml'
@@ -35,7 +35,7 @@ class AmazonUrlBuilder {
 		$this->throwIfNull($associateTag, 'Amazon associate tag');
 
         $this->secretKey = $secretKey;
-        $this->amazonTld = $this->GetAmazonApiEndpoint($locale);
+        $this->amazonEndpoint = $this->GetAmazonApiEndpoint($locale);
         $this->associateTag = $associateTag;
         $this->keyId = $keyId;
     }
@@ -57,7 +57,7 @@ class AmazonUrlBuilder {
 
 		$buildParams = array_merge($baseParams, $params);
 
-		$request = $this->amazonTld . '?' .http_build_query($buildParams);
+		$request = $this->amazonEndpoint . '?' .http_build_query($buildParams);
 
 		return($request);
 	}
@@ -103,7 +103,16 @@ class AmazonUrlBuilder {
 	    $signature_string = "GET\n{$uri_elements['host']}\n{$uri_elements['path']}\n{$new_request}";
 
 	    // Create our signature using hash_hmac
-	    $signature = urlencode(base64_encode(hash_hmac('sha256', $signature_string, $this->secretKey, true)));
+	    $signature = urlencode(
+			base64_encode(
+				hash_hmac(
+					'sha256',
+					$signature_string,
+					$this->secretKey,
+					true
+				)
+			)
+		);
 
 	    // Return our new request
 		$newUrl = "http://{$uri_elements['host']}{$uri_elements['path']}?{$new_request}&Signature={$signature}";
@@ -113,7 +122,7 @@ class AmazonUrlBuilder {
     public function generate($params) {
         $unsignedRequest = $this->CreateUnsignedAmazonUrl($params);
 
-        return($this->GetSignedRequest($unsignedRequest));
+        return $this->GetSignedRequest($unsignedRequest);
     }
 }
 
