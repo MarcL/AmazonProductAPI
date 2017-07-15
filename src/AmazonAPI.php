@@ -16,12 +16,7 @@ use MarcL\Transformers\XmlTransformer;
 
 class AmazonAPI
 {
-	private $m_locale = 'uk';
 	private $m_retrieveArray = false;
-
-	private $m_keyId		= NULL;
-	private $m_secretKey	= NULL;
-	private $m_associateTag = NULL;
 	private $urlBuilder = NULL;
 
 	// Valid names that can be used for search
@@ -75,23 +70,8 @@ class AmazonAPI
 		}
 	}
 
-	public function __construct($keyId, $secretKey, $associateTag, $locale = 'us') {
-		$this->throwIfNull($keyId, 'Amazon key ID');
-		$this->throwIfNull($secretKey, 'Amazon secret key');
-		$this->throwIfNull($associateTag, 'Amazon associate tag');
-
-		// Setup the AWS credentials
-		$this->m_keyId			= $keyId;
-		$this->m_secretKey		= $secretKey;
-		$this->m_associateTag	= $associateTag;
-		$this->m_locale 		= $locale;
-
-		$this->urlBuilder = new AmazonUrlBuilder(
-			$this->m_keyId,
-			$this->m_secretKey,
-			$this->m_associateTag,
-			$this->m_locale
-		);
+	public function __construct($urlBuilder) {
+		$this->urlBuilder = $urlBuilder;
 	}
 
 	public function SetRetrieveAsArray($retrieveArray = true) {

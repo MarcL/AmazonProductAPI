@@ -23,7 +23,17 @@ class AmazonUrlBuilder {
 		'us' =>	'webservices.amazon.com/onca/xml'
 	);
 
+	private function throwIfNull($parameterValue, $parameterName) {
+		if ($parameterValue == NULL) {
+			throw new \Exception($parameterName . ' should be defined');
+		}
+	}
+
     public function __construct($keyId, $secretKey, $associateTag, $locale = 'us') {
+		$this->throwIfNull($keyId, 'Amazon key ID');
+		$this->throwIfNull($secretKey, 'Amazon secret key');
+		$this->throwIfNull($associateTag, 'Amazon associate tag');
+
         $this->secretKey = $secretKey;
         $this->amazonTld = $this->GetAmazonApiEndpoint($locale);
         $this->associateTag = $associateTag;
