@@ -3,7 +3,7 @@
 namespace MarcL\Transformers;
 
 interface IDataTransformer {
-	public function execute();
+	public function execute($data);
 }
 
 ?>

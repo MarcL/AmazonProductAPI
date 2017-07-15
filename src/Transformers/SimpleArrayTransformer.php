@@ -5,34 +5,28 @@ namespace MarcL\Transformers;
 use MarcL\Transformers\IDataTransformer;
 
 class SimpleArrayTransformer implements IDataTransformer {
-    private $xmlData = NULL;
-
-    public function __construct($xmlData) {
-        $this->xmlData = $xmlData;
-    }
-
-    public function execute() {
+    public function execute($xmlData) {
 		$items = array();
-		if (empty($this->xmlData)) {
+		if (empty($xmlData)) {
 			$this->AddError("No XML response found from AWS.");
 			return($items);
 		}
 
-		if (empty($this->xmlData->Items)) {
+		if (empty($xmlData->Items)) {
 			$this->AddError("No items found.");
 			return($items);
 		}
 
-		if ($this->xmlData->Items->Request->IsValid != 'True') {
-			$errorCode = $this->xmlData->Items->Request->Errors->Error->Code;
-			$errorMessage = $this->xmlData->Items->Request->Errors->Error->Message;
+		if ($xmlData->Items->Request->IsValid != 'True') {
+			$errorCode = $xmlData->Items->Request->Errors->Error->Code;
+			$errorMessage = $xmlData->Items->Request->Errors->Error->Message;
 			$error = "API ERROR ($errorCode) : $errorMessage";
 			$this->AddError($error);
 			return($items);
 		}
 
 		// Get each item
-		foreach($this->xmlData->Items->Item as $responseItem) {
+		foreach($xmlData->Items->Item as $responseItem) {
 			$item = array();
 			$item['asin'] = (string) $responseItem->ASIN;
 			$item['url'] = (string) $responseItem->DetailPageURL;

@@ -11,6 +11,8 @@ namespace MarcL;
 
 use MarcL\CurlHttpRequest;
 use MarcL\AmazonUrlBuilder;
+use MarcL\Transformers\ArrayTransformer;
+use MarcL\Transformers\JsonTransformer;
 use MarcL\Transformers\SimpleArrayTransformer;
 use MarcL\Transformers\XmlTransformer;
 
@@ -18,6 +20,7 @@ class AmazonAPI
 {
 	private $m_retrieveArray = false;
 	private $urlBuilder = NULL;
+	private $dataTransformer = NULL;
 
 	// Valid names that can be used for search
 	private $mValidSearchNames = array(
@@ -70,8 +73,9 @@ class AmazonAPI
 		}
 	}
 
-	public function __construct($urlBuilder) {
+	public function __construct($urlBuilder, $outputType) {
 		$this->urlBuilder = $urlBuilder;
+		$this->dataTransformer = $this->createDataTransformer($outputType);
 	}
 
 	public function SetRetrieveAsArray($retrieveArray = true) {
@@ -105,11 +109,25 @@ class AmazonAPI
 			return(false);
 		}
 
-		$dataTransformer = $this->m_retrieveArray
-			? new SimpleArrayTransformer($parsedXml)
-			: new XmlTransformer($parsedXml);
+		return $this->dataTransformer->execute($parsedXml);
+	}
 
-		return $dataTransformer->execute();
+	private function createDataTransformer($outputType) {
+		switch($outputType) {
+			case 'array':
+				return new ArrayTransformer();
+				break;
+			case 'json':
+				return new JsonTransformer();
+				break;
+			case 'simple':
+				return new SimpleArrayTransformer();
+				break;
+			case 'xml':
+			default:
+				return new XmlTransformer();
+				break;
+		}
 	}
 
 	/**

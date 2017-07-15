@@ -17,33 +17,32 @@ $urlBuilder = new AmazonUrlBuilder(
 );
 
 // Setup a new instance of the AmazonAPI with your keys
-$amazonAPI = new AmazonAPI($urlBuilder);
-$amazonAPI->SetRetrieveAsArray();
+$amazonAPI = new AmazonAPI($urlBuilder, 'simple');
 
 // Need to avoid triggering Amazon API throttling
 $sleepTime = 1.5;
 
 // Item Search:
 // Harry Potter in Books, sort by featured
-$items = $amazonAPI->ItemSearch('harry potter', 'Books');
-print('>> Harry Potter in Books, sort by featured');
-var_dump($items);
+// $items = $amazonAPI->ItemSearch('harry potter', 'Books');
+// print('>> Harry Potter in Books, sort by featured');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Harry Potter in Books, sort by price low to high
-$items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
-print('>> Harry Potter in Books, sort by price low to high');
-var_dump($items);
+// // Harry Potter in Books, sort by price low to high
+// $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
+// print('>> Harry Potter in Books, sort by price low to high');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Harry Potter in Books, sort by price high to low
-$items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
-print('>> Harry Potter in Books, sort by price high to low');
-var_dump($items);
+// // Harry Potter in Books, sort by price high to low
+// $items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
+// print('>> Harry Potter in Books, sort by price high to low');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
 // Amazon echo, only in Amazon
 $items = $amazonAPI->ItemLookUp('B01GAGVIE4', true);
