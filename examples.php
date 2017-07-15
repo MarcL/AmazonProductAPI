@@ -22,7 +22,7 @@ $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
 print('>> Harry Potter in Books, sort by price low to high');
 var_dump($items);
 
-// // Harry Potter in Books, sort by price high to low
+// Harry Potter in Books, sort by price high to low
 $items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
 print('>> Harry Potter in Books, sort by price high to low');
 var_dump($items);

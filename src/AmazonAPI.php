@@ -11,6 +11,8 @@ namespace MarcL;
 
 use MarcL\CurlHttpRequest;
 use MarcL\AmazonUrlBuilder;
+use MarcL\Transformers\SimpleArrayTransformer;
+use MarcL\Transformers\XmlTransformer;
 
 class AmazonAPI
 {
@@ -93,11 +95,11 @@ class AmazonAPI
 	}
 
 	public function SetRetrieveAsArray($retrieveArray = true) {
-		$this->m_retrieveArray	= $retrieveArray;
+		$this->m_retrieveArray = $retrieveArray;
 	}
 
 	public function GetValidSearchNames() {
-		return($this->mValidSearchNames);
+		return $this->mValidSearchNames;
 	}
 
 	private function MakeSignedRequest($params) {
@@ -114,7 +116,7 @@ class AmazonAPI
 			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
 		}
 
-		return(false);
+		return false;
 	}
 
 	private function MakeAndParseRequest($params) {
@@ -123,10 +125,11 @@ class AmazonAPI
 			return(false);
 		}
 
-		return($this->m_retrieveArray
-			? $this->RetrieveItems($parsedXml)
-			: $parsedXml
-		);
+		$dataTransformer = $this->m_retrieveArray
+			? new SimpleArrayTransformer($parsedXml)
+			: new XmlTransformer($parsedXml);
+
+		return $dataTransformer->execute();
 	}
 
 	/**
@@ -149,7 +152,7 @@ class AmazonAPI
 			'Sort' => $sortBy && ($searchIndex != 'All') ? $sortBy : NULL
 		);
 
-		return($this->MakeAndParseRequest($params));
+		return $this->MakeAndParseRequest($params);
 	}
 
 	/**
@@ -173,60 +176,7 @@ class AmazonAPI
 			'MerchantId' => ($onlyFromAmazon == true) ? 'Amazon' : 'All'
 		);
 
-		return($this->MakeAndParseRequest($params));
-	}
-
-	/**
-	 * Basic method to retrieve only requested item data as an array
-	 *
-	 * @param	responseXML		XML data to be passed
-	 *
-	 * @return	Array			Array of item data. Empty array if not found
-	 */
-	private function RetrieveItems($responseXml) {
-		$items = array();
-		if (empty($responseXml)) {
-			$this->AddError("No XML response found from AWS.");
-			return($items);
-		}
-
-		if (empty($responseXml->Items)) {
-			$this->AddError("No items found.");
-			return($items);
-		}
-
-		if ($responseXml->Items->Request->IsValid != 'True') {
-			$errorCode = $responseXml->Items->Request->Errors->Error->Code;
-			$errorMessage = $responseXml->Items->Request->Errors->Error->Message;
-			$error = "API ERROR ($errorCode) : $errorMessage";
-			$this->AddError($error);
-			return($items);
-		}
-
-		// Get each item
-		foreach($responseXml->Items->Item as $responseItem) {
-			$item = array();
-			$item['asin'] = (string) $responseItem->ASIN;
-			$item['url'] = (string) $responseItem->DetailPageURL;
-			$item['rrp'] = ((float) $responseItem->ItemAttributes->ListPrice->Amount) / 100.0;
-			$item['title'] = (string) $responseItem->ItemAttributes->Title;
-
-			if ($responseItem->OfferSummary) {
-				$item['lowestPrice'] = ((float) $responseItem->OfferSummary->LowestNewPrice->Amount) / 100.0;
-			}
-			else {
-				$item['lowestPrice'] = 0.0;
-			}
-
-			// Images
-			$item['largeImage'] = (string) $responseItem->LargeImage->URL;
-			$item['mediumImage'] = (string) $responseItem->MediumImage->URL;
-			$item['smallImage'] = (string) $responseItem->SmallImage->URL;
-
-			array_push($items, $item);
-		}
-
-		return($items);
+		return $this->MakeAndParseRequest($params);
 	}
 
 	private function AddError($error) {
@@ -234,7 +184,7 @@ class AmazonAPI
 	}
 
 	public function GetErrors() {
-		return($this->mErrors);
+		return $this->mErrors;
 	}
 }
 ?>
