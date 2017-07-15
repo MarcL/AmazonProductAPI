@@ -8,6 +8,8 @@ class AmazonUrlBuilder {
     private $associateTag = NULL;
     private $amazonEndpoint = NULL;
 
+	private $endpoint = 'onca/xml';
+
 	private $localeTable = array(
 		'br' => 'webservices.amazon.br/onca/xml',
 		'ca' =>	'webservices.amazon.ca/onca/xml',
@@ -62,6 +64,30 @@ class AmazonUrlBuilder {
 		return($request);
 	}
 
+	private function encodeParameters($parameters) {
+		$encodedParameters = array();
+	    foreach ($parameters as $parameter => $value) {
+	        $parameter = str_replace("%7E", "~", rawurlencode($parameter));
+	        $value = str_replace("%7E", "~", rawurlencode($value));
+			$encodedParameters[$parameter]= $value;
+	    }
+
+		return $encodedParameters;
+	}
+
+	private function createSignature($signatureString) {
+	    return urlencode(
+			base64_encode(
+				hash_hmac(
+					'sha256',
+					$signatureString,
+					$this->secretKey,
+					true
+				)
+			)
+		);
+	}
+
 	/**
 	  * This function will take an existing Amazon request and change it so that it will be usable
 	  * with the new authentication.
@@ -71,7 +97,7 @@ class AmazonUrlBuilder {
 	  *
 	  * @link http://www.ilovebonnie.net/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/
 	  */
-	private function GetSignedRequest($request, $version = '2011-08-01') {
+	private function CreateSignedAwsRequest($request, $version = '2011-08-01') {
 	    // Get a nice array of elements to work with
 	    $uri_elements = parse_url($request);
 
@@ -93,36 +119,28 @@ class AmazonUrlBuilder {
 	        // We need to be sure we properly encode the value of our parameter
 	        $parameter = str_replace("%7E", "~", rawurlencode($parameter));
 	        $value = str_replace("%7E", "~", rawurlencode($value));
-	        $request_array[] = $parameter . '=' . $value;
+	        $requestArray[] = $parameter . '=' . $value;
 	    }
 
 	    // Put our & symbol at the beginning of each of our request variables and put it in a string
-	    $new_request = implode('&', $request_array);
+	    $requestParameters = implode('&', $requestArray);
 
 	    // Create our signature string
-	    $signature_string = "GET\n{$uri_elements['host']}\n{$uri_elements['path']}\n{$new_request}";
+	    $signatureString = "GET\n{$uri_elements['host']}\n{$uri_elements['path']}\n{$requestParameters}";
+	    // $signatureString = $this->createSignatureString($this->encodeParameters($parameters));
+		// var_dump($signatureString);
 
-	    // Create our signature using hash_hmac
-	    $signature = urlencode(
-			base64_encode(
-				hash_hmac(
-					'sha256',
-					$signature_string,
-					$this->secretKey,
-					true
-				)
-			)
-		);
+	    $signature = $this->createSignature($signatureString);
 
 	    // Return our new request
-		$newUrl = "http://{$uri_elements['host']}{$uri_elements['path']}?{$new_request}&Signature={$signature}";
+		$newUrl = "http://{$uri_elements['host']}{$uri_elements['path']}?{$requestParameters}&Signature={$signature}";
 	    return $newUrl;
 	}
 
     public function generate($params) {
         $unsignedRequest = $this->CreateUnsignedAmazonUrl($params);
 
-        return $this->GetSignedRequest($unsignedRequest);
+		return $this->CreateSignedAwsRequest($unsignedRequest);
     }
 }
 

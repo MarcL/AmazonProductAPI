@@ -149,14 +149,6 @@ class AmazonUrlBuilderTest extends TestCase {
         $this->assertStringMatchesFormat('%d-%d-%dT%d:%d:%dZ', $parameters['Timestamp']);
     }
 
-    // array(
-	// 		'Operation' => 'ItemLookup',
-	// 		'ResponseGroup' => 'ItemAttributes,Offers,Reviews,Images,EditorialReview',
-	// 		'ReviewSort' => '-OverallRating',
-	// 		'ItemId' => $asinList,
-	// 		'MerchantId' => ($onlyFromAmazon == true) ? 'Amazon' : 'All'
-	// 	)
-
     public function testShouldContainPassedParameter() {
         $givenParameters = array(
             'Operation' => 'ItemLookup'
