@@ -64,17 +64,6 @@ class AmazonUrlBuilder {
 		return($request);
 	}
 
-	private function encodeParameters($parameters) {
-		$encodedParameters = array();
-	    foreach ($parameters as $parameter => $value) {
-	        $parameter = str_replace("%7E", "~", rawurlencode($parameter));
-	        $value = str_replace("%7E", "~", rawurlencode($value));
-			$encodedParameters[$parameter]= $value;
-	    }
-
-		return $encodedParameters;
-	}
-
 	private function createSignature($signatureString) {
 	    return urlencode(
 			base64_encode(
@@ -127,9 +116,6 @@ class AmazonUrlBuilder {
 
 	    // Create our signature string
 	    $signatureString = "GET\n{$uri_elements['host']}\n{$uri_elements['path']}\n{$requestParameters}";
-	    // $signatureString = $this->createSignatureString($this->encodeParameters($parameters));
-		// var_dump($signatureString);
-
 	    $signature = $this->createSignature($signatureString);
 
 	    // Return our new request
