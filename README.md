@@ -1,16 +1,18 @@
 # AmazonProductAPI
 PHP library to perform product lookup and searches using the Amazon Product API.
 
-## Dependencies
-Requires the [SimpleXML](http://php.net/manual/en/book.simplexml.php) PHP and [Curl](http://php.net/manual/en/book.curl.php) extensions to be installed.
-It also assumes that you have some knowledge of Amazon's Product API and have set up an Amazon Associate and [Amazon Web Services](http://docs.amazonwebservices.com/AWSECommerceService/2011-08-01/GSG/GettingSetUp.html) account in order to retrieve your access keys.
-
 ## Installation
-Clone the git repository:
+
+This library requires the [SimpleXML](http://php.net/manual/en/book.simplexml.php) and [Curl](http://php.net/manual/en/book.curl.php) extensions to be installed and uses PHP 7+ . Installation is simple using [Composer](https://composer.io):
 
 ```shell
-git clone https://github.com/MarcL/AmazonProductAPI.git
+composer require marcl\amazonproductapi
 ```
+
+### Amazon Product API
+It also assumes that you have some basic knowledge of Amazon's Product API and have set up an Amazon Associate account see: [Amazon Product API Set Up](http://docs.amazonwebservices.com/AWSECommerceService/2011-08-01/GSG/GettingSetUp.html).
+
+You'll need an AWS key, secret key, and associate tag. Ensure that you keep these safe!
 
 ## Examples
 
@@ -30,31 +32,41 @@ and then run the examples with:
 php examples.php
 ```
 
-## Usage
-Include the library in your code:
+## Quick Start
+
+Include the library in your code using the Composer autoloader and create an AmazonUrlBuilder with your credentials
 
 ```php
-include_once('./AmazonAPI.php');
-```
+require('vendor/autoload.php');
 
-Instantiate the class using your secret keys:
+use MarcL\AmazonAPI;
+use MarcL\AmazonUrlBuilder;
 
-```php
 // Keep these safe
 $keyId = 'YOUR-AWS-KEY';
 $secretKey = 'YOUR-AWS-SECRET-KEY';
 $associateId = 'YOUR-AMAZON-ASSOCIATE-ID';
 
-$locale = 'us'; // Default is 'uk'
+// Setup a new instance of the AmazonUrlBuilder with your keys
+$urlBuilder = new AmazonUrlBuilder(
+    $keyId,
+    $secretKey,
+    $associateId,
+    'uk'
+);
 
-$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId, $locale);
+// Setup a new instance of the AmazonAPI and define the type of response
+$amazonAPI = new AmazonAPI($urlBuilder, 'simple');
+
+$items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
+
 ```
 
 **Note:** Keep your Amazon keys safe. Either use environment variables or include from a file that you don't check into GitHub.
 
 ### Locale
 
-This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set it as you construct the class.
+This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set it as you construct the AmazonUrlBuilder class with your keys.
 
 At this time, these are the current supported locales:
 
@@ -113,12 +125,12 @@ $asinIds = array('B003U6I396', 'B003U6I397', 'B003U6I398');
 $items = $amazonAPI->ItemLookUp($asinIds);
 ```
 
-### Returned data
-By default the data will be returned as SimpleXML nodes. However if you call `SetRetrieveAsArray()` then a simplified array of items will be returned. For example:
+### Data Transformation
+By default the data will be returned as SimpleXML nodes. However, you can ask for the data to be transformed differently, depending on your use case for the API. Pass a type when instantiating the AmazonAPI class as follows:
 
 ```php
-// Return XML data
-$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
+// Default return type is XML
+$amazonAPI = new AmazonAPI($amazonUrlBuilder);
 $items = $amazonAPI->ItemSearch('harry potter');
 var_dump($items);
 ```
@@ -140,13 +152,12 @@ class SimpleXMLElement#2 (2) {
 
 ```php
 // Return simplified data
-$amazonAPI = new AmazonAPI($keyId, $secretKey, $associateId);
-$amazonAPI->SetRetrieveAsArray();
+$amazonAPI = new AmazonAPI($amazonUrlBuilder, 'simple');
 $items = $amazonAPI->ItemSearch('harry potter');
 var_dump($items);
 ```
 
-Returning simplified data gives a PHP array
+This will return a simplified version of each item with minimal data but enough for simple use cases.
 
 ```
 array(10) {
@@ -182,15 +193,20 @@ array(10) {
 	…
 ```
 
+The different data transformation types are defined as follows. Feel free to raise an issue if you'd like the data transforming to a new type.
+
+* **xml** - (Default) returns data as SimpleXML nodes.
+* **array** - Returns data as PHP arrays and objects.
+* **simple** - Returns data as simplified arrays and doesn't contain all API data. Use this if you just need prices, title and images.
+* **json** - Returns data as a JSON string. Use this for returning from a server API endpoint.
+
 ## TODO
 
 * Need to make the simplified data less hardcoded!
-* Make this a Composer package
-* Add unit tests
 
 ## Thanks
 
-This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake).
+This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake) but has been mostly rewritten.
 
 ## LICENSE
 
