@@ -63,12 +63,6 @@ class AmazonAPI
 
 	private $mErrors = array();
 
-	private function throwIfNull($parameterValue, $parameterName) {
-		if ($parameterValue == NULL) {
-			throw new \Exception($parameterName . ' should be defined');
-		}
-	}
-
 	public function __construct($urlBuilder, $outputType) {
 		$this->urlBuilder = $urlBuilder;
 		$this->dataTransformer = DataTransformerFactory::create($outputType);
