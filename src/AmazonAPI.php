@@ -127,7 +127,7 @@ class AmazonAPI
 		array_push($this->mErrors, $error);
 	}
 
-	private function MakeSignedRequest($params) {
+	private function MakeAndParseRequest($params) {
 		$signedUrl = $this->urlBuilder->generate($params);
 
 		try {
@@ -141,13 +141,8 @@ class AmazonAPI
 			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
 		}
 
-		return false;
-	}
-
-	private function MakeAndParseRequest($params) {
-		$parsedXml = $this->MakeSignedRequest($params);
 		if ($parsedXml === false) {
-			return(false);
+			return false;
 		}
 
 		return $this->dataTransformer->execute($parsedXml);
