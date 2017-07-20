@@ -11,14 +11,10 @@ namespace MarcL;
 
 use MarcL\CurlHttpRequest;
 use MarcL\AmazonUrlBuilder;
-use MarcL\Transformers\ArrayTransformer;
-use MarcL\Transformers\JsonTransformer;
-use MarcL\Transformers\SimpleArrayTransformer;
-use MarcL\Transformers\XmlTransformer;
+use MarcL\Transformers\DataTransformerFactory;
 
 class AmazonAPI
 {
-	private $m_retrieveArray = false;
 	private $urlBuilder = NULL;
 	private $dataTransformer = NULL;
 
@@ -75,59 +71,11 @@ class AmazonAPI
 
 	public function __construct($urlBuilder, $outputType) {
 		$this->urlBuilder = $urlBuilder;
-		$this->dataTransformer = $this->createDataTransformer($outputType);
-	}
-
-	public function SetRetrieveAsArray($retrieveArray = true) {
-		$this->m_retrieveArray = $retrieveArray;
+		$this->dataTransformer = DataTransformerFactory::create($outputType);
 	}
 
 	public function GetValidSearchNames() {
 		return $this->mValidSearchNames;
-	}
-
-	private function MakeSignedRequest($params) {
-		$signedUrl = $this->urlBuilder->generate($params);
-
-		try {
-			$request = new CurlHttpRequest();
-			$response = $request->execute($signedUrl);
-
-			$parsedXml = simplexml_load_string($response);
-
-			return($parsedXml);
-		} catch(\Exception $error) {
-			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
-		}
-
-		return false;
-	}
-
-	private function MakeAndParseRequest($params) {
-		$parsedXml = $this->MakeSignedRequest($params);
-		if ($parsedXml === false) {
-			return(false);
-		}
-
-		return $this->dataTransformer->execute($parsedXml);
-	}
-
-	private function createDataTransformer($outputType) {
-		switch($outputType) {
-			case 'array':
-				return new ArrayTransformer();
-				break;
-			case 'json':
-				return new JsonTransformer();
-				break;
-			case 'simple':
-				return new SimpleArrayTransformer();
-				break;
-			case 'xml':
-			default:
-				return new XmlTransformer();
-				break;
-		}
 	}
 
 	/**
@@ -177,12 +125,38 @@ class AmazonAPI
 		return $this->MakeAndParseRequest($params);
 	}
 
+	public function GetErrors() {
+		return $this->mErrors;
+	}
+
 	private function AddError($error) {
 		array_push($this->mErrors, $error);
 	}
 
-	public function GetErrors() {
-		return $this->mErrors;
+	private function MakeSignedRequest($params) {
+		$signedUrl = $this->urlBuilder->generate($params);
+
+		try {
+			$request = new CurlHttpRequest();
+			$response = $request->execute($signedUrl);
+
+			$parsedXml = simplexml_load_string($response);
+
+			return($parsedXml);
+		} catch(\Exception $error) {
+			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
+		}
+
+		return false;
+	}
+
+	private function MakeAndParseRequest($params) {
+		$parsedXml = $this->MakeSignedRequest($params);
+		if ($parsedXml === false) {
+			return(false);
+		}
+
+		return $this->dataTransformer->execute($parsedXml);
 	}
 }
 ?>
