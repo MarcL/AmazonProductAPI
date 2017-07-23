@@ -6,7 +6,7 @@ PHP library to perform product lookup and searches using the Amazon Product API.
 This library requires the [SimpleXML](http://php.net/manual/en/book.simplexml.php) and [Curl](http://php.net/manual/en/book.curl.php) extensions to be installed and uses PHP 7+ . Installation is simple using [Composer](https://composer.io):
 
 ```shell
-composer require marcl\amazonproductapi
+composer require marcl/amazonproductapi
 ```
 
 ### Amazon Product API
