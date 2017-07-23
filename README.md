@@ -56,7 +56,7 @@ $urlBuilder = new AmazonUrlBuilder(
 );
 
 // Setup a new instance of the AmazonAPI and define the type of response
-$amazonAPI = new AmazonProductAPI($urlBuilder, 'simple');
+$amazonAPI = new AmazonAPI($urlBuilder, 'simple');
 
 $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
 
