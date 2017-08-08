@@ -163,7 +163,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
     public function testShouldContainPassedParameterWithCorrectEncoding() {
         $givenParameters = array(
-			'ResponseGroup' => 'ItemAttributes,Offers,Reviews,Images,EditorialReview',
+		    'ResponseGroup' => 'ItemAttributes,Offers,Reviews,Images,EditorialReview',
         );
         $amazonUrlBuilder = $this->createDefaultUrlBuilder();
         $url = $amazonUrlBuilder->generate($givenParameters);
