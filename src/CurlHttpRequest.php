@@ -18,7 +18,6 @@ class CurlHttpRequest implements IHttpRequest {
 	}
 
 	public function execute($url) {
-		// Use curl to retrieve data from Amazon
 		$session = curl_init($url);
 		curl_setopt($session, CURLOPT_HEADER, false);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
