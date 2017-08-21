@@ -135,8 +135,6 @@ class AmazonAPI
 			$response = $request->execute($signedUrl);
 
 			$parsedXml = simplexml_load_string($response);
-
-			return($parsedXml);
 		} catch(\Exception $error) {
 			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
 		}
