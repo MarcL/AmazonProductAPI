@@ -135,15 +135,16 @@ class AmazonAPI
 			$response = $request->execute($signedUrl);
 
 			$parsedXml = simplexml_load_string($response);
+
+			if ($parsedXml === false) {
+				return false;
+			}
+
+			return $this->dataTransformer->execute($parsedXml);
 		} catch(\Exception $error) {
 			$this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
-		}
-
-		if ($parsedXml === false) {
 			return false;
 		}
-
-		return $this->dataTransformer->execute($parsedXml);
 	}
 }
 ?>
