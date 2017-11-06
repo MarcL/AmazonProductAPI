@@ -1,7 +1,8 @@
 {
     "name": "marcl/amazonproductapi",
-    "description": "PHP library to perform product lookup and searches using the Amazon Product API.",
-    "version": "3.0.1",
+    "description":
+        "PHP library to perform product lookup and searches using the Amazon Product API.",
+    "version": "3.0.2",
     "type": "library",
     "keywords": ["amazon", "product", "api"],
     "homepage": "https://github.com/MarcL/AmazonProductAPI/",
@@ -31,4 +32,5 @@
             "MarcL\\": "src/",
             "tests\\": "tests/"
         }
-    }}
+    }
+}

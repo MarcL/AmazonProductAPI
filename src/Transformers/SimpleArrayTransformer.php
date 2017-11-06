@@ -8,12 +8,10 @@ class SimpleArrayTransformer implements IDataTransformer {
     public function execute($xmlData) {
 		$items = array();
 		if (empty($xmlData)) {
-			$this->AddError("No XML response found from AWS.");
-			return($items);
+			throw new \Exception("No XML response found from AWS.");
 		}
 
 		if (empty($xmlData->Items)) {
-			$this->AddError("No items found.");
 			return($items);
 		}
 
@@ -21,8 +19,7 @@ class SimpleArrayTransformer implements IDataTransformer {
 			$errorCode = $xmlData->Items->Request->Errors->Error->Code;
 			$errorMessage = $xmlData->Items->Request->Errors->Error->Message;
 			$error = "API ERROR ($errorCode) : $errorMessage";
-			$this->AddError($error);
-			return($items);
+			throw new \Exception($error);
 		}
 
 		// Get each item
@@ -48,7 +45,8 @@ class SimpleArrayTransformer implements IDataTransformer {
 			array_push($items, $item);
 		}
 
-		return($items);    }
+		return($items);
+	}
 }
 
 ?>

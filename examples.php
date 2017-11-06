@@ -48,4 +48,13 @@ sleep($sleepTime);
 $items = $amazonAPI->ItemLookUp('B01GAGVIE4', true);
 print('>> Look up specific ASIN\n');
 var_dump($items);
+
+sleep($sleepTime);
+
+// Amazon echo, lookup with incorrect ASIN array
+$asinIds = array('INVALID', 'INVALIDASIN', 'NOTANASIN');
+$items = $amazonAPI->ItemLookUp($asinIds, true);
+print('>> Look up specific ASIN\n');
+var_dump($items);
+var_dump($amazonAPI->GetErrors());
 ?>
