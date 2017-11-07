@@ -8,20 +8,19 @@ class SimpleArrayTransformer implements IDataTransformer {
     public function execute($xmlData) {
 		$items = array();
 		if (empty($xmlData)) {
-			throw new \Exception("No XML response found from AWS.");
-		}
-
-		if (empty($xmlData->Items)) {
-			return($items);
+			throw new \Exception('No XML response');
 		}
 
 		if ($xmlData->Items->Request->IsValid != 'True') {
 			$errorCode = $xmlData->Items->Request->Errors->Error->Code;
 			$errorMessage = $xmlData->Items->Request->Errors->Error->Message;
-			$error = "API ERROR ($errorCode) : $errorMessage";
+			$error = "API error ($errorCode) : $errorMessage";
 			throw new \Exception($error);
 		}
 
+		if (empty($xmlData->Items->Item)) {
+			return($items);
+		}
 		// Get each item
 		foreach($xmlData->Items->Item as $responseItem) {
 			$item = array();

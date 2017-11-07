@@ -7,9 +7,12 @@ class JsonTransformerTest extends TestCase {
     public function testShouldReturnExpectedJson() {
         $transformer = new JsonTransformer();
         $testXmlData = "<?xml version=\"1.0\"?><OperationRequest><RequestId>9852889b-383b-4f09-ac23-4448e7ce8a16</RequestId></OperationRequest>";
-        $arrayJson = $transformer->execute($testXmlData);
+        $givenXml = simplexml_load_string($testXmlData);
+        $expectedResponse = json_encode($givenXml);
 
-        $this->assertEquals($arrayJson, json_encode($testXmlData));
+        $response = $transformer->execute($givenXml);
+
+        $this->assertEquals($expectedResponse, $response);
     }
 }
 ?>
