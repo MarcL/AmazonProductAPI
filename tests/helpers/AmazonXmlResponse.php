@@ -45,12 +45,16 @@ class AmazonXmlResponse {
         $lowestNewPrice = $offerSummary->addChild('LowestNewPrice');
         $lowestNewPrice->addChild('Amount', $lowestNewPrice);
 
-        $largeImage = $item->addChild('LargeImage');
-        $largeImage->addChild('URL', $largeImageUrl);
-        $mediumImage = $item->addChild('MediumImage');
-        $mediumImage->addChild('URL', $mediumImageUrl);
-        $smallImage = $item->addChild('SmallImage');
-        $smallImage->addChild('URL', $smallImageUrl);
+        $this->addItemImage($item, 'LargeImage', $largeImageUrl);
+        $this->addItemImage($item, 'MediumImage', $mediumImageUrl);
+        $this->addItemImage($item, 'SmallImage', $smallImageUrl);
+
+        return $item;
+    }
+
+    public function addItemImage($item, $imageType, $imageUrl) {
+        $image = $item->addChild($imageType);
+        $image->addChild('URL', $imageUrl);
     }
 }
 
