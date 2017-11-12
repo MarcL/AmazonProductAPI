@@ -2,24 +2,39 @@
 
 use PHPUnit\Framework\TestCase;
 use MarcL\Transformers\SimpleArrayTransformer;
+use tests\helpers\AmazonXmlResponse;
 
 class SimpleArrayTransformerTest extends TestCase {
-    private function createInvalidAmazonXmlRequest($code, $message) {
-        return "<Request><IsValid>False</IsValid><Errors><Error><Code>$code</Code><Message>$message</Message></Error></Errors></Request>";
-    }
 
     private function createValidAmazonXmlRequest() {
         return "<Request><IsValid>True</IsValid></Request>";
     }
 
     private function createInvalidAmazonXmlResponse($code, $message) {
-        $request = $this->createInvalidAmazonXmlRequest($code, $message);
-        return "<?xml version=\"1.0\"?><OperationRequest><RequestId>9852889b-383b-4f09-ac23-4448e7ce8a16</RequestId><Items>$request</Items></OperationRequest>";
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addInvalidRequest($code, $message);
+        return $amazonXmlResponse->asXml();
     }
 
     private function createValidAmazonXmlResponse() {
-        $request = $this->createValidAmazonXmlRequest();
-        return "<?xml version=\"1.0\"?><OperationRequest><RequestId>9852889b-383b-4f09-ac23-4448e7ce8a16</RequestId><Items>$request</Items></OperationRequest>";
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addValidRequest();
+        return $amazonXmlResponse->asXml();
+    }
+
+    private function createAmazonItem($asin, $pageUrl) {
+        return "<Item><ASIN>$asin</ASIN><DetailPageURL>$pageUrl</DetailPageURL></Item>";
+    }
+
+    private function createAmazonItemList($numItems) {
+        $itemListString = '';
+        for($i = 0; $i < $numItems; $i++) {
+            $itemListString .= $this->createAmazonItem("ASIN-$i", "https://amazon.com/ASIN-$i");
+        }
+
+        return $itemListString;
     }
 
     public function testShouldThrowExpecteExceptionIfNoXmlIsPassed() {
@@ -51,5 +66,18 @@ class SimpleArrayTransformerTest extends TestCase {
 
         $this->assertEmpty($response);
     }
+
+    // public function testShouldReturnExpectedNumberOfItems() {
+    //     $expectedNumberOfItems = 10;
+    //     $itemList = $this->createAmazonItemList($expectedNumberOfItems);
+    //     $testXmlData = $this->createValidAmazonXmlResponse($itemList);
+    //     $givenXml = simplexml_load_string($testXmlData);
+
+    //     $transformer = new SimpleArrayTransformer();
+    //     $response = $transformer->execute($givenXml);
+    //     var_dump($response);
+
+    //     $this->assertEquals($expectedNumberOfItems, count($response));
+    // }
 }
 ?>

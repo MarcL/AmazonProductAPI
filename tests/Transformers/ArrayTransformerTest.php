@@ -2,11 +2,15 @@
 
 use PHPUnit\Framework\TestCase;
 use MarcL\Transformers\ArrayTransformer;
+use tests\helpers\AmazonXmlResponse;
 
 class ArrayTransformerTest extends TestCase {
     public function testShouldReturnExpectedXml() {
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('test-request-id');
+
         $transformer = new ArrayTransformer();
-        $testXmlData = "<?xml version=\"1.0\"?><OperationRequest><RequestId>9852889b-383b-4f09-ac23-4448e7ce8a16</RequestId></OperationRequest>";
+        $testXmlData = $amazonXmlResponse->asXml();
         $givenXml = simplexml_load_string($testXmlData);
         $expectedResponse = json_decode(json_encode($givenXml));
 
