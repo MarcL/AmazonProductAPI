@@ -5,6 +5,7 @@ namespace tests\helpers;
 class AmazonXmlResponse {
 	public function __construct() {
         $this->document = new \SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><OperationRequest></OperationRequest>');
+        $this->items = $this->document->addChild('Items');
     }
 
     public function asXml() {
@@ -16,8 +17,7 @@ class AmazonXmlResponse {
     }
 
     public function addInvalidRequest($errorCode, $errorMessage) {
-        $items = $this->document->addChild('Items');
-        $request = $items->addChild('Request');
+        $request = $this->items->addChild('Request');
         $request->addChild('IsValid', 'False');
         $errors = $request->addChild('Errors');
         $error = $errors->addChild('Error');
@@ -26,9 +26,31 @@ class AmazonXmlResponse {
     }
 
     public function addValidRequest() {
-        $items = $this->document->addChild('Items');
-        $request = $items->addChild('Request');
+        $request = $this->items->addChild('Request');
         $request->addChild('IsValid', 'True');
+    }
+
+    // TODO : Refactor
+    public function addItem($asin, $detailpageUrl, $rrp, $title, $lowestNewPrice,  $largeImageUrl, $mediumImageUrl, $smallImageUrl) {
+        $item = $this->items->addChild('Item');
+        $item->addChild('ASIN', $asin);
+        $item->addChild('DetailPageUrl', $detailpageUrl);
+
+        $itemAttributes = $item->addChild('ItemAttributes');
+        $listPrice = $itemAttributes->addChild('ListPrice');
+        $listPrice->addChild('Amount', $rrp);
+        $itemAttributes->addChild('Title', $title);
+
+        $offerSummary = $item->addChild('OfferSummary');
+        $lowestNewPrice = $offerSummary->addChild('LowestNewPrice');
+        $lowestNewPrice->addChild('Amount', $lowestNewPrice);
+
+        $largeImage = $item->addChild('LargeImage');
+        $largeImage->addChild('URL', $largeImageUrl);
+        $mediumImage = $item->addChild('MediumImage');
+        $mediumImage->addChild('URL', $mediumImageUrl);
+        $smallImage = $item->addChild('SmallImage');
+        $smallImage->addChild('URL', $smallImageUrl);
     }
 }
 

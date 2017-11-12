@@ -24,17 +24,10 @@ class SimpleArrayTransformerTest extends TestCase {
         return $amazonXmlResponse->asXml();
     }
 
-    private function createAmazonItem($asin, $pageUrl) {
-        return "<Item><ASIN>$asin</ASIN><DetailPageURL>$pageUrl</DetailPageURL></Item>";
-    }
-
-    private function createAmazonItemList($numItems) {
-        $itemListString = '';
-        for($i = 0; $i < $numItems; $i++) {
-            $itemListString .= $this->createAmazonItem("ASIN-$i", "https://amazon.com/ASIN-$i");
+    private function createAmazonXmlItems($amazonXmlResponse, $numberOfItems) {
+        for($i = 0; $i < $numberOfItems; $i++) {
+            $amazonXmlResponse->addItem("ASIN-$i", 'http://detailpage.url', '100', 'Test Title', '50',  'http://largeimage.url', 'http://mediumimage.url', 'http://smallimage.url');
         }
-
-        return $itemListString;
     }
 
     public function testShouldThrowExpecteExceptionIfNoXmlIsPassed() {
@@ -67,17 +60,20 @@ class SimpleArrayTransformerTest extends TestCase {
         $this->assertEmpty($response);
     }
 
-    // public function testShouldReturnExpectedNumberOfItems() {
-    //     $expectedNumberOfItems = 10;
-    //     $itemList = $this->createAmazonItemList($expectedNumberOfItems);
-    //     $testXmlData = $this->createValidAmazonXmlResponse($itemList);
-    //     $givenXml = simplexml_load_string($testXmlData);
+    public function testShouldReturnExpectedNumberOfItems() {
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addValidRequest();
 
-    //     $transformer = new SimpleArrayTransformer();
-    //     $response = $transformer->execute($givenXml);
-    //     var_dump($response);
+        $expectedNumberOfItems = 10;
+        $this->createAmazonXmlItems($amazonXmlResponse, $expectedNumberOfItems);
+        $testXmlData = $amazonXmlResponse->asXml();
+        $givenXml = simplexml_load_string($testXmlData);
 
-    //     $this->assertEquals($expectedNumberOfItems, count($response));
-    // }
+        $transformer = new SimpleArrayTransformer();
+        $response = $transformer->execute($givenXml);
+
+        $this->assertEquals($expectedNumberOfItems, count($response));
+    }
 }
 ?>
