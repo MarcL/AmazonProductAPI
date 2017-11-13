@@ -21,7 +21,7 @@ class SimpleArrayTransformer implements IDataTransformer {
 		if (empty($xmlData->Items->Item)) {
 			return($items);
 		}
-		// Get each item
+
 		foreach($xmlData->Items->Item as $responseItem) {
 			$item = array();
 			$item['asin'] = (string) $responseItem->ASIN;
@@ -36,7 +36,6 @@ class SimpleArrayTransformer implements IDataTransformer {
 				$item['lowestPrice'] = 0.0;
 			}
 
-			// Images
 			$item['largeImage'] = (string) $responseItem->LargeImage->URL;
 			$item['mediumImage'] = (string) $responseItem->MediumImage->URL;
 			$item['smallImage'] = (string) $responseItem->SmallImage->URL;
