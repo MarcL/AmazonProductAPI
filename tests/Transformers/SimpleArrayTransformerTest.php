@@ -81,5 +81,27 @@ class SimpleArrayTransformerTest extends TestCase {
 
         $this->assertEquals($expectedNumberOfItems, count($response));
     }
+
+    public function testShouldReturnItemWithExpectedAsin() {
+        $givenAsin = 'givenAsin';
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addValidRequest();
+
+        $item = $amazonXmlResponse->addItem($givenAsin, 'http://detailpage.url');
+        $amazonXmlResponse->addItemItemAttributes($item, '100', 'Test Title');
+        $amazonXmlResponse->addItemOfferSummary($item, '50');
+        $amazonXmlResponse->addItemLargeImage($item, 'http://largeimage.url');
+        $amazonXmlResponse->addItemMediumImage($item, 'http://mediumimage.url');
+        $amazonXmlResponse->addItemSmallImage($item, 'http://smallimage.url');
+
+        $testXmlData = $amazonXmlResponse->asXml();
+        $givenXml = simplexml_load_string($testXmlData);
+
+        $transformer = new SimpleArrayTransformer();
+        $response = $transformer->execute($givenXml);
+
+        $this->assertEquals($givenAsin, $response[0]['ASIN']);
+    }
 }
 ?>
