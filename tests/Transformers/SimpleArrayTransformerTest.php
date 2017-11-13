@@ -26,7 +26,13 @@ class SimpleArrayTransformerTest extends TestCase {
 
     private function createAmazonXmlItems($amazonXmlResponse, $numberOfItems) {
         for($i = 0; $i < $numberOfItems; $i++) {
-            $amazonXmlResponse->addItem("ASIN-$i", 'http://detailpage.url', '100', 'Test Title', '50',  'http://largeimage.url', 'http://mediumimage.url', 'http://smallimage.url');
+            $item = $amazonXmlResponse->addItem("ASIN-$i", 'http://detailpage.url');
+
+            $amazonXmlResponse->addItemItemAttributes($item, '100', 'Test Title');
+            $amazonXmlResponse->addItemOfferSummary($item, '50');
+            $amazonXmlResponse->addItemLargeImage($item, 'http://largeimage.url');
+            $amazonXmlResponse->addItemMediumImage($item, 'http://mediumimage.url');
+            $amazonXmlResponse->addItemSmallImage($item, 'http://smallimage.url');
         }
     }
 

@@ -30,31 +30,42 @@ class AmazonXmlResponse {
         $request->addChild('IsValid', 'True');
     }
 
-    // TODO : Refactor
-    public function addItem($asin, $detailpageUrl, $rrp, $title, $lowestNewPrice,  $largeImageUrl, $mediumImageUrl, $smallImageUrl) {
+    public function addItem($asin, $detailpageUrl) {
         $item = $this->items->addChild('Item');
         $item->addChild('ASIN', $asin);
         $item->addChild('DetailPageUrl', $detailpageUrl);
 
-        $itemAttributes = $item->addChild('ItemAttributes');
-        $listPrice = $itemAttributes->addChild('ListPrice');
-        $listPrice->addChild('Amount', $rrp);
-        $itemAttributes->addChild('Title', $title);
-
-        $offerSummary = $item->addChild('OfferSummary');
-        $lowestNewPrice = $offerSummary->addChild('LowestNewPrice');
-        $lowestNewPrice->addChild('Amount', $lowestNewPrice);
-
-        $this->addItemImage($item, 'LargeImage', $largeImageUrl);
-        $this->addItemImage($item, 'MediumImage', $mediumImageUrl);
-        $this->addItemImage($item, 'SmallImage', $smallImageUrl);
-
         return $item;
     }
 
-    public function addItemImage($item, $imageType, $imageUrl) {
+    private function addItemImage($item, $imageType, $imageUrl) {
         $image = $item->addChild($imageType);
         $image->addChild('URL', $imageUrl);
+    }
+
+    public function addItemLargeImage($item, $url) {
+        $this->addItemImage($item, 'LargeImage', $url);
+    }
+
+    public function addItemMediumImage($item, $url) {
+        $this->addItemImage($item, 'MediumImage', $url);
+    }
+
+    public function addItemSmallImage($item, $url) {
+        $this->addItemImage($item, 'SmallImage', $url);
+    }
+
+    public function addItemItemAttributes($item, $amount, $title) {
+        $itemAttributes = $item->addChild('ItemAttributes');
+        $listPrice = $itemAttributes->addChild('ListPrice');
+        $listPrice->addChild('Amount', $amount);
+        $itemAttributes->addChild('Title', $title);
+    }
+
+    public function addItemOfferSummary($item, $amount) {
+        $offerSummary = $item->addChild('OfferSummary');
+        $lowestNewPrice = $offerSummary->addChild('LowestNewPrice');
+        $lowestNewPrice->addChild('Amount', $amount);
     }
 }
 
