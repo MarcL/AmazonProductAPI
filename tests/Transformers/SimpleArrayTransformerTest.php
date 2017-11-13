@@ -12,22 +12,23 @@ class SimpleArrayTransformerTest extends TestCase {
 
     private function createInvalidAmazonXmlResponse($code, $message) {
         $amazonXmlResponse = new AmazonXmlResponse();
-        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addRequestId('testRequestId');
         $amazonXmlResponse->addInvalidRequest($code, $message);
         return $amazonXmlResponse->asXml();
     }
 
     private function createValidAmazonXmlResponse() {
         $amazonXmlResponse = new AmazonXmlResponse();
-        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addRequestId('testRequestId');
         $amazonXmlResponse->addValidRequest();
         return $amazonXmlResponse->asXml();
     }
 
     private function createAmazonXmlItems($amazonXmlResponse, $numberOfItems) {
         for($i = 0; $i < $numberOfItems; $i++) {
-            $item = $amazonXmlResponse->addItem("ASIN-$i", 'http://detailpage.url');
+            $item = $amazonXmlResponse->addItem("ASIN-$i");
 
+            $amazonXmlResponse->addItemDetailPageUrl($item, 'http://detailpage.url');
             $amazonXmlResponse->addItemItemAttributes($item, '100', 'Test Title');
             $amazonXmlResponse->addItemOfferSummary($item, '50');
             $amazonXmlResponse->addItemLargeImage($item, 'http://largeimage.url');
@@ -68,7 +69,7 @@ class SimpleArrayTransformerTest extends TestCase {
 
     public function testShouldReturnExpectedNumberOfItems() {
         $amazonXmlResponse = new AmazonXmlResponse();
-        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addRequestId('testRequestId');
         $amazonXmlResponse->addValidRequest();
 
         $expectedNumberOfItems = 10;
@@ -85,10 +86,11 @@ class SimpleArrayTransformerTest extends TestCase {
     public function testShouldReturnItemWithExpectedAsin() {
         $givenAsin = 'givenAsin';
         $amazonXmlResponse = new AmazonXmlResponse();
-        $amazonXmlResponse->addRequestId('test-request-id');
+        $amazonXmlResponse->addRequestId('testRequestId');
         $amazonXmlResponse->addValidRequest();
 
-        $item = $amazonXmlResponse->addItem($givenAsin, 'http://detailpage.url');
+        $item = $amazonXmlResponse->addItem($givenAsin);
+        $amazonXmlResponse->addItemDetailPageUrl($item, 'http://detailpage.url');
         $amazonXmlResponse->addItemItemAttributes($item, '100', 'Test Title');
         $amazonXmlResponse->addItemOfferSummary($item, '50');
         $amazonXmlResponse->addItemLargeImage($item, 'http://largeimage.url');
@@ -101,7 +103,30 @@ class SimpleArrayTransformerTest extends TestCase {
         $transformer = new SimpleArrayTransformer();
         $response = $transformer->execute($givenXml);
 
-        $this->assertEquals($givenAsin, $response[0]['ASIN']);
+        $this->assertEquals($givenAsin, $response[0]['asin']);
+    }
+
+    public function testShouldReturnItemWithExpectedUrl() {
+        $givenUrl = 'givenUrl';
+        $amazonXmlResponse = new AmazonXmlResponse();
+        $amazonXmlResponse->addRequestId('testRequestId');
+        $amazonXmlResponse->addValidRequest();
+
+        $item = $amazonXmlResponse->addItem('defaultAsin');
+        $amazonXmlResponse->addItemDetailPageUrl($item, $givenUrl);
+        $amazonXmlResponse->addItemItemAttributes($item, '100', 'Test Title');
+        $amazonXmlResponse->addItemOfferSummary($item, '50');
+        $amazonXmlResponse->addItemLargeImage($item, 'http://largeimage.url');
+        $amazonXmlResponse->addItemMediumImage($item, 'http://mediumimage.url');
+        $amazonXmlResponse->addItemSmallImage($item, 'http://smallimage.url');
+
+        $testXmlData = $amazonXmlResponse->asXml();
+        $givenXml = simplexml_load_string($testXmlData);
+
+        $transformer = new SimpleArrayTransformer();
+        $response = $transformer->execute($givenXml);
+
+        $this->assertEquals($givenUrl, $response[0]['url']);
     }
 }
 ?>

@@ -30,12 +30,15 @@ class AmazonXmlResponse {
         $request->addChild('IsValid', 'True');
     }
 
-    public function addItem($asin, $detailpageUrl) {
+    public function addItem($asin) {
         $item = $this->items->addChild('Item');
         $item->addChild('ASIN', $asin);
-        $item->addChild('DetailPageUrl', $detailpageUrl);
 
         return $item;
+    }
+
+    public function addItemDetailPageUrl($item, $url) {
+        $item->addChild('DetailPageURL', $url);
     }
 
     private function addItemImage($item, $imageType, $imageUrl) {
