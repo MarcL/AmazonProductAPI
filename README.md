@@ -66,7 +66,7 @@ $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
 
 ### Locale
 
-This library supports all [Product Advertising API locales](http://docs.aws.amazon.com/AWSECommerceService/latest/DG/Locales.html) and you can set it as you construct the AmazonUrlBuilder class with your keys.
+This library supports all [Product Advertising API locales](https://affiliate-program.amazon.com/assoc_credentials/home) and you can set it as you construct the AmazonUrlBuilder class with your keys.
 
 At this time, these are the current supported locales:
 
