@@ -122,6 +122,8 @@ return [
 			'Blended',
 			'Blended',
 			'Books',
+			// etc...
+			// this list is not complete
 		],
 	],
 ];
