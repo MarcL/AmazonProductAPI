@@ -7,6 +7,7 @@ use MarcL\AmazonUrlBuilder;
 
 // Should load these from environment variables
 include_once('./secretKeys.php');
+$configAmazonProductAPI = include('./config/amazonproductapi.php');
 
 // Setup a new instance of the AmazonUrlBuilder with your keys
 $urlBuilder = new AmazonUrlBuilder(
@@ -16,8 +17,13 @@ $urlBuilder = new AmazonUrlBuilder(
     'uk'
 );
 
+// get amazon product api valid attributes
+$search_names = $configAmazonProductAPI['search_names'];
+$response_groups = $configAmazonProductAPI['response_groups'];
+$sort_values = $configAmazonProductAPI['sort_values'];
+
 // Setup a new instance of the AmazonAPI with your keys
-$amazonAPI = new AmazonAPI($urlBuilder, 'simple');
+$amazonAPI = new AmazonAPI($urlBuilder, 'simple', $search_names, $response_groups, $sort_values);
 
 // Need to avoid triggering Amazon API throttling
 $sleepTime = 1.5;

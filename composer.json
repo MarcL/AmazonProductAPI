@@ -32,5 +32,22 @@
             "MarcL\\": "src/",
             "tests\\": "tests/"
         }
-    }
+    },
+  "scripts": {
+    "amazonproductapi-cmd": [
+      "@php -r \"file_exists('../../../.env') || copy('.env.example', '../../../.env');\"",
+      "@php -r \"file_exists('../../../config/amazonproductapi.php') || copy('config/amazonproductapi.php', '../../../config/amazonproductapi.php');\"",
+      "echo \"update root .env file with Amazon API Credentials\"",
+      "echo \"exclude .env file from git add/commit by adding the reference in .gitignore file\""
+    ],
+    "post-root-package-install": [
+      "@amazonproductapi-cmd"
+    ],
+    "post-install-cmd": [
+      "@amazonproductapi-cmd"
+    ],
+    "post-update-cmd": [
+      "@amazonproductapi-cmd"
+    ]
+  }
 }
