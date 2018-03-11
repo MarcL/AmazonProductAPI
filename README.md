@@ -204,6 +204,11 @@ The different data transformation types are defined as follows. Feel free to rai
 
 * Need to make the simplified data less hardcoded!
 
+## For manually running scripts post install
+```
+	composer run-script post-install-cmd -d ./vendor/marcl/amazonproductapi
+```
+
 ## Thanks
 
 This library uses code based on [AWS API authentication For PHP](http://randomdrake.com/2009/07/27/amazon-aws-api-rest-authentication-for-php-5/) by [David Drake](https://github.com/randomdrake) but has been mostly rewritten.
