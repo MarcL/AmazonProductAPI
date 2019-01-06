@@ -2,8 +2,8 @@
 /**
  *  Amazon Product API Library
  *
- * @author Marc Littlemore
- * @link    http://www.marclittlemore.com
+ *  @author Marc Littlemore
+ *  @link 	http://www.marclittlemore.com
  *
  */
 
@@ -103,14 +103,12 @@ class AmazonAPI
 
     private $mErrors = array();
 
-    public function __construct($urlBuilder, $outputType)
-    {
+    public function __construct($urlBuilder, $outputType) {
         $this->urlBuilder = $urlBuilder;
         $this->dataTransformer = DataTransformerFactory::create($outputType);
     }
 
-    public function GetValidSearchNames()
-    {
+    public function GetValidSearchNames() {
         return $this->mValidSearchNames;
     }
 
@@ -122,16 +120,15 @@ class AmazonAPI
     /**
      * Search for items
      *
-     * @param    keywords            Keywords which we're requesting
-     * @param    responseGroup        ResponseGroups to be requested
-     * @param    searchIndex            Name of search index (category) requested. NULL if searching all.
-     * @param    sortBy                Category to sort by, only used if searchIndex is not 'All'
-     * @param    condition            Condition of item. Valid conditions : Used, Collectible, Refurbished, All
+     * @param	keywords			Keywords which we're requesting
+     * @param	searchIndex			Name of search index (category) requested. NULL if searching all.
+     * @param	sortBy				Category to sort by, only used if searchIndex is not 'All'
+     * @param	condition			Condition of item. Valid conditions : Used, Collectible, Refurbished, All
+     * @param 	responseGroups		ResponseGroups defined by Amazon
      *
-     * @return    mixed                SimpleXML object, array of data or false if failure.
+     * @return	mixed				SimpleXML object, array of data or false if failure.
      */
-    public function ItemSearch($keywords, Array $responseGroups = [], $searchIndex = NULL, $sortBy = NULL, $condition = 'New')
-    {
+    public function ItemSearch($keywords, $searchIndex = NULL, $sortBy = NULL, $condition = 'New', Array $responseGroups = ['ItemAttributes', 'Offers', 'Images']) {
         $params = array(
             'Operation' => 'ItemSearch',
             'ResponseGroup' => $this->CheckAndHandleResponseGroups($responseGroups, 'ItemSearch'),
@@ -147,14 +144,13 @@ class AmazonAPI
     /**
      * Lookup items from ASINs
      *
-     * @param    asinList            Either a single ASIN or an array of ASINs
-     * @param    responseGroup        ResponseGroups to be requested
-     * @param    onlyFromAmazon        True if only requesting items from Amazon and not 3rd party vendors
+     * @param	asinList			Either a single ASIN or an array of ASINs
+     * @param	onlyFromAmazon		True if only requesting items from Amazon and not 3rd party vendors
+     * @param 	responseGroups		ResponseGroups defined by Amazon
      *
-     * @return    mixed                SimpleXML object, array of data or false if failure.
+     * @return	mixed				SimpleXML object, array of data or false if failure.
      */
-    public function ItemLookup($asinList, Array $responseGroups = [], $onlyFromAmazon = false)
-    {
+    public function ItemLookup($asinList, $onlyFromAmazon = false, Array $responseGroups = ['ItemAttributes', 'Offers', 'Reviews', 'Images', 'EditorialReview']) {
         if (is_array($asinList)) {
             $asinList = implode(',', $asinList);
         }
@@ -170,18 +166,15 @@ class AmazonAPI
         return $this->MakeAndParseRequest($params);
     }
 
-    public function GetErrors()
-    {
+    public function GetErrors() {
         return $this->mErrors;
     }
 
-    private function AddError($error)
-    {
+    private function AddError($error) {
         array_push($this->mErrors, $error);
     }
 
-    private function MakeAndParseRequest($params)
-    {
+    private function MakeAndParseRequest($params) {
         $signedUrl = $this->urlBuilder->generate($params);
 
         try {
@@ -195,7 +188,7 @@ class AmazonAPI
             }
 
             return $this->dataTransformer->execute($parsedXml);
-        } catch (\Exception $error) {
+        } catch(\Exception $error) {
             $this->AddError("Error downloading data : $signedUrl : " . $error->getMessage());
             return false;
         }
@@ -205,15 +198,12 @@ class AmazonAPI
     {
         foreach ($responseGroups as &$value) {
             $value = ucfirst($value);
-
             if (!in_array($value, $responseGroups)) {
                 $this->AddError($value . ' is not a valid ResponseGroup.');
                 unset($value);
             }
         }
-
         if (empty($responseGroups)) {
-
             switch ($requestType) {
                 default:
                     return 'Small';
@@ -223,7 +213,6 @@ class AmazonAPI
                     return 'ItemAttributes,Offers,Reviews,Images,EditorialReview';
             }
         }
-
         return implode($responseGroups, ',');
     }
 }
