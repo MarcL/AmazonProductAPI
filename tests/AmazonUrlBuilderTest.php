@@ -54,7 +54,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldBuildUrlWithExpectedGivenUKLocale() {
@@ -63,7 +63,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldBuildUrlWithExpectedGivenJapaneseLocale() {
@@ -72,7 +72,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldBuildUrlWithExpectedGivenMexicanLocale() {
@@ -81,7 +81,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldBuildUrlWithExpectedGivenValidLocale() {
@@ -90,7 +90,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldBuildUrlWithDefaultUSLocaleIfGivenLocaleIsUnknown() {
@@ -99,14 +99,14 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains($expectedTld, $url);
+        $this->assertStringContainsString($expectedTld, $url);
     }
 
     public function testShouldContainExpectedService() {
         $amazonUrlBuilder = $this->createDefaultUrlBuilder();
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains('Service=AWSECommerceService', $url);
+        $this->assertStringContainsString('Service=AWSECommerceService', $url);
     }
 
     public function testShouldContainExpectedAssociateTag() {
@@ -118,7 +118,7 @@ class AmazonUrlBuilderTest extends TestCase {
         );
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains('AssociateTag=' . $givenAssociateTag, $url);
+        $this->assertStringContainsString('AssociateTag=' . $givenAssociateTag, $url);
     }
 
     public function testShouldContainExpectedAwsAccessKeyId() {
@@ -130,14 +130,14 @@ class AmazonUrlBuilderTest extends TestCase {
         );
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains('AWSAccessKeyId=' . $givenAwsAccessKeyId, $url);
+        $this->assertStringContainsString('AWSAccessKeyId=' . $givenAwsAccessKeyId, $url);
     }
 
     public function testShouldContainExpectedVersion() {
         $amazonUrlBuilder = $this->createDefaultUrlBuilder();
         $url = $amazonUrlBuilder->generate(array());
 
-        $this->assertContains('Version=2011-08-01', $url);
+        $this->assertStringContainsString('Version=2011-08-01', $url);
     }
 
     public function testShouldContainValidTimestamp() {
@@ -158,7 +158,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $parameters = $this->getUrlQueryParameterArray($url);
 
-        $this->assertContains('Operation=' . $givenParameters['Operation'], $url);
+        $this->assertStringContainsString('Operation=' . $givenParameters['Operation'], $url);
     }
 
     public function testShouldContainPassedParameterWithCorrectEncoding() {
@@ -172,7 +172,7 @@ class AmazonUrlBuilderTest extends TestCase {
 
         $parameters = $this->getUrlQueryParameterArray($url);
 
-        $this->assertContains($expectedParameter, $url);
+        $this->assertStringContainsString($expectedParameter, $url);
     }
 }
 ?>

@@ -1,8 +1,7 @@
 {
     "name": "marcl/amazonproductapi",
     "description":
-        "PHP library to perform product lookup and searches using the Amazon Product API.",
-    "version": "3.0.2",
+        "PHP library to perform product lookup and searches using the Amazon Product Advertising API 5.0.",
     "type": "library",
     "keywords": ["amazon", "product", "api"],
     "homepage": "https://github.com/MarcL/AmazonProductAPI/",
@@ -20,7 +19,8 @@
         "issues": "https://github.com/MarcL/AmazonProductAPI/issues"
     },
     "require-dev": {
-        "phpunit/phpunit": "6.1.*"
+        "php": ">=7.3.0",
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-4": {
