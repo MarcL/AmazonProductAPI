@@ -28,33 +28,33 @@ $items = $amazonAPI->ItemSearch('harry potter', 'Books');
 print('>> Harry Potter in Books, sort by featured');
 var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Harry Potter in Books, sort by price low to high
-$items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
-print('>> Harry Potter in Books, sort by price low to high');
-var_dump($items);
+// // Harry Potter in Books, sort by price low to high
+// $items = $amazonAPI->ItemSearch('harry potter', 'Books', 'price');
+// print('>> Harry Potter in Books, sort by price low to high');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Harry Potter in Books, sort by price high to low
-$items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
-print('>> Harry Potter in Books, sort by price high to low');
-var_dump($items);
+// // Harry Potter in Books, sort by price high to low
+// $items = $amazonAPI->ItemSearch('harry potter', 'Books', '-price');
+// print('>> Harry Potter in Books, sort by price high to low');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Amazon echo, lookup only with Amazon as a seller
-$items = $amazonAPI->ItemLookUp('B01GAGVIE4', true);
-print('>> Look up specific ASIN\n');
-var_dump($items);
+// // Amazon echo, lookup only with Amazon as a seller
+// $items = $amazonAPI->ItemLookUp('B01GAGVIE4', true);
+// print('>> Look up specific ASIN\n');
+// var_dump($items);
 
-sleep($sleepTime);
+// sleep($sleepTime);
 
-// Amazon echo, lookup with incorrect ASIN array
-$asinIds = array('INVALID', 'INVALIDASIN', 'NOTANASIN');
-$items = $amazonAPI->ItemLookUp($asinIds, true);
-print('>> Look up specific ASIN\n');
-var_dump($items);
-var_dump($amazonAPI->GetErrors());
+// // Amazon echo, lookup with incorrect ASIN array
+// $asinIds = array('INVALID', 'INVALIDASIN', 'NOTANASIN');
+// $items = $amazonAPI->ItemLookUp($asinIds, true);
+// print('>> Look up specific ASIN\n');
+// var_dump($items);
+// var_dump($amazonAPI->GetErrors());
 ?>

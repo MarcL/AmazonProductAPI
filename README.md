@@ -10,7 +10,7 @@ composer require marcl/amazonproductapi
 ```
 
 ### Amazon Product API
-It also assumes that you have some basic knowledge of Amazon's Product API and have set up an Amazon Associate account see: [Amazon Product API Set Up](http://docs.amazonwebservices.com/AWSECommerceService/2011-08-01/GSG/GettingSetUp.html).
+It also assumes that you have some basic knowledge of Amazon's Product API and have set up an Amazon Associate account see: [Amazon Product API Set Up](https://webservices.amazon.com/paapi5/documentation/register-for-pa-api.html).
 
 You'll need an AWS key, secret key, and associate tag. Ensure that you keep these safe!
 
